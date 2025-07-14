@@ -1,0 +1,397 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Sparkles, Crown, History, LogOut, Wand2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+
+const Dashboard = () => {
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [niche, setNiche] = useState("");
+  const [format, setFormat] = useState("");
+  const [style, setStyle] = useState("");
+  const [videoLength] = useState("Under 60 seconds");
+  const [loading, setLoading] = useState(false);
+  const [generatedContent, setGeneratedContent] = useState<any>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [history, setHistory] = useState<any[]>([]);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/login");
+        return;
+      }
+      setUser(session.user);
+      fetchProfile();
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_OUT' || !session) {
+          navigate("/login");
+        } else {
+          setUser(session.user);
+          fetchProfile();
+        }
+      }
+    );
+
+    getSession();
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const fetchProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user?.id || (await supabase.auth.getUser()).data.user?.id)
+        .single();
+      
+      if (error) throw error;
+      setProfile(data);
+    } catch (error: any) {
+      toast({
+        title: "Error fetching profile",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const fetchHistory = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('content_packs')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      setHistory(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Error fetching history",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleGenerateContent = async () => {
+    if (!niche || !format || !style) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all fields before generating content.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-content', {
+        body: { niche, format, style, videoLength },
+      });
+
+      if (error) throw error;
+
+      if (data.error) {
+        toast({
+          title: "Generation failed",
+          description: data.message || data.error,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setGeneratedContent(data);
+      fetchProfile(); // Refresh profile to update usage count
+      
+      toast({
+        title: "Content generated!",
+        description: "Your viral content pack is ready.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error generating content",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegenerate = async () => {
+    if (profile?.plan !== 'pro') {
+      toast({
+        title: "Pro feature",
+        description: "Upgrade to Pro to access regeneration.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    await handleGenerateContent();
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
+
+  const handleViewHistory = () => {
+    setShowHistory(!showHistory);
+    if (!showHistory) {
+      fetchHistory();
+    }
+  };
+
+  if (!user || !profile) {
+    return <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+    </div>;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      {/* Header */}
+      <header className="border-b border-border/50 bg-background/80 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
+            <Sparkles className="h-8 w-8 text-primary" />
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              RapidCreator.ai
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <Badge variant={profile.plan === 'pro' ? 'default' : 'secondary'}>
+              {profile.plan === 'pro' ? (
+                <><Crown className="h-3 w-3 mr-1" /> Pro</>
+              ) : (
+                'Free'
+              )}
+            </Badge>
+            <Button variant="outline" size="sm" onClick={handleViewHistory}>
+              <History className="h-4 w-4 mr-2" />
+              History
+            </Button>
+            {profile.plan !== 'pro' && (
+              <Button variant="hero" size="sm" onClick={() => navigate("/plans")}>
+                <Crown className="h-4 w-4 mr-2" />
+                Upgrade to Pro
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" onClick={handleSignOut}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-8">
+        {!showHistory ? (
+          <div className="max-w-4xl mx-auto">
+            {/* Welcome Section */}
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                Generate Viral Content
+              </h1>
+              <p className="text-muted-foreground mb-4">
+                Create engaging short-form video content in seconds
+              </p>
+              <div className="text-sm text-muted-foreground">
+                You have used {profile.daily_generations_used} of {profile.daily_generations_limit} generations today
+              </div>
+            </div>
+
+            {/* Input Form */}
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle>Content Generation Settings</CardTitle>
+                <CardDescription>Fill in the details to generate your viral content pack</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="niche">Niche</Label>
+                    <Input
+                      id="niche"
+                      placeholder="e.g., Gaming, Finance, Motivation"
+                      value={niche}
+                      onChange={(e) => setNiche(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="format">Format</Label>
+                    <Select value={format} onValueChange={setFormat}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select format" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="YouTube Short">YouTube Short</SelectItem>
+                        <SelectItem value="Instagram Reel">Instagram Reel</SelectItem>
+                        <SelectItem value="TikTok">TikTok</SelectItem>
+                        <SelectItem value="Carousel">Carousel</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="style">Style</Label>
+                    <Select value={style} onValueChange={setStyle}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select style" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Hook-based">Hook-based</SelectItem>
+                        <SelectItem value="Storytelling">Storytelling</SelectItem>
+                        <SelectItem value="Stats">Stats</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="videoLength">Video Length</Label>
+                    <Input
+                      id="videoLength"
+                      value={videoLength}
+                      disabled
+                      className="bg-muted"
+                    />
+                  </div>
+                </div>
+                
+                <Button 
+                  onClick={handleGenerateContent} 
+                  disabled={loading || !niche || !format || !style}
+                  className="w-full"
+                  variant="hero"
+                >
+                  {loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-background mr-2"></div>
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Wand2 className="h-4 w-4 mr-2" />
+                      Generate Content Pack
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Generated Content */}
+            {generatedContent && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Wand2 className="h-5 w-5" />
+                    Your Content Pack (Generated)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <h3 className="font-semibold mb-2">📌 Title:</h3>
+                    <p className="text-foreground">{generatedContent.title}</p>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div>
+                    <h3 className="font-semibold mb-2">📝 Description:</h3>
+                    <p className="text-foreground">{generatedContent.description}</p>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div>
+                    <h3 className="font-semibold mb-2">🎙️ Script:</h3>
+                    <p className="text-foreground whitespace-pre-wrap">{generatedContent.script}</p>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div>
+                    <h3 className="font-semibold mb-2">🏷️ Hashtags:</h3>
+                    <p className="text-foreground">{generatedContent.hashtags}</p>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div>
+                    <h3 className="font-semibold mb-2">🖼️ Thumbnail Text:</h3>
+                    <p className="text-foreground">{generatedContent.thumbnailText}</p>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div>
+                    <h3 className="font-semibold mb-2">🖼️ Thumbnail Design Idea:</h3>
+                    <p className="text-foreground">{generatedContent.thumbnailDesignIdea}</p>
+                  </div>
+                  
+                  {profile.plan === 'pro' && (
+                    <div className="pt-4">
+                      <Button onClick={handleRegenerate} variant="outline" disabled={loading}>
+                        🔄 Regenerate
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        ) : (
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">Content History</h2>
+              <Button variant="outline" onClick={() => setShowHistory(false)}>
+                Back to Generator
+              </Button>
+            </div>
+            
+            <div className="space-y-4">
+              {history.map((item) => (
+                <Card key={item.id}>
+                  <CardHeader>
+                    <CardTitle className="text-lg">{item.title}</CardTitle>
+                    <CardDescription>
+                      {item.niche} • {item.format} • {item.style} • {new Date(item.created_at).toLocaleDateString()}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Script:</strong> {item.script}</p>
+                      <p><strong>Hashtags:</strong> {item.hashtags}</p>
+                      <p><strong>Thumbnail Text:</strong> {item.thumbnail_text}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;

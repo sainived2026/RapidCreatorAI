@@ -14,7 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      content_packs: {
+        Row: {
+          created_at: string | null
+          description: string
+          format: string
+          hashtags: string
+          id: string
+          niche: string
+          script: string
+          style: string
+          thumbnail_design_idea: string
+          thumbnail_text: string
+          title: string
+          user_id: string
+          video_length: string
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          format: string
+          hashtags: string
+          id?: string
+          niche: string
+          script: string
+          style: string
+          thumbnail_design_idea: string
+          thumbnail_text: string
+          title: string
+          user_id: string
+          video_length: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          format?: string
+          hashtags?: string
+          id?: string
+          niche?: string
+          script?: string
+          style?: string
+          thumbnail_design_idea?: string
+          thumbnail_text?: string
+          title?: string
+          user_id?: string
+          video_length?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          daily_generations_limit: number
+          daily_generations_used: number
+          email: string
+          id: string
+          last_reset_date: string | null
+          plan: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          daily_generations_limit?: number
+          daily_generations_used?: number
+          email: string
+          id?: string
+          last_reset_date?: string | null
+          plan?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          daily_generations_limit?: number
+          daily_generations_used?: number
+          email?: string
+          id?: string
+          last_reset_date?: string | null
+          plan?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

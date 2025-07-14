@@ -2,9 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Zap, Users, TrendingUp, Play, Sparkles, Star, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import heroImage from "../assets/hero-bg.jpg";
 
 const Index = () => {
+  const navigate = useNavigate();
+  
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Navigation */}
@@ -17,8 +20,8 @@ const Index = () => {
             </span>
           </div>
           <div className="flex items-center space-x-4">
-            <Button variant="ghost">Login</Button>
-            <Button variant="hero">Start Free Trial</Button>
+            <Button variant="ghost" onClick={() => navigate("/login")}>Login</Button>
+            <Button variant="hero" onClick={() => navigate("/plans")}>Start Free Trial</Button>
           </div>
         </div>
       </nav>
@@ -52,13 +55,9 @@ const Index = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+            <Button variant="hero" size="lg" className="text-lg px-8 py-6" onClick={() => navigate("/login")}>
               <Play className="mr-2 h-5 w-5" />
               Start Creating for Free — No Card Needed
-            </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-              <Play className="mr-2 h-5 w-5" />
-              Watch Demo
             </Button>
           </div>
           
@@ -134,7 +133,7 @@ const Index = () => {
           <h3 className="text-3xl font-bold mb-4">
             Don't skip content today — get your script in 1 click!
           </h3>
-          <Button variant="accent" size="lg" className="text-lg px-8 py-6">
+          <Button variant="accent" size="lg" className="text-lg px-8 py-6" onClick={() => navigate("/login")}>
             Generate Now
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
@@ -181,7 +180,7 @@ const Index = () => {
                   <span className="w-5 h-5 mr-3">✗</span>
                   <span>No regenerate button</span>
                 </div>
-                <Button variant="outline" className="w-full mt-6">
+                <Button variant="outline" className="w-full mt-6" onClick={() => navigate("/login")}>
                   Get Started Free
                 </Button>
               </CardContent>
@@ -218,7 +217,7 @@ const Index = () => {
                   <CheckCircle className="h-5 w-5 text-success mr-3" />
                   <span>Priority support</span>
                 </div>
-                <Button variant="hero" className="w-full mt-6">
+                <Button variant="hero" className="w-full mt-6" onClick={() => navigate("/plans")}>
                   Upgrade to Pro
                 </Button>
               </CardContent>
@@ -295,7 +294,7 @@ const Index = () => {
             Join thousands of content creators who are already using AI to generate viral video content packs in seconds.
           </p>
           
-          <Button variant="hero" size="lg" className="text-xl px-12 py-8 mb-4">
+          <Button variant="hero" size="lg" className="text-xl px-12 py-8 mb-4" onClick={() => navigate("/login")}>
             <Sparkles className="mr-3 h-6 w-6" />
             Start Creating for Free — No Card Needed
           </Button>
