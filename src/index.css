@@ -2,41 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Rapid Creator AI Design System - Modern creator-focused aesthetic with neon gradients */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Dark theme base colors */
+    --background: 222 14% 8%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 222 14% 10%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 222 14% 10%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 222.2 47.4% 11.2%;
+    /* Primary brand colors - Electric purple */
+    --primary: 258 90% 66%;
     --primary-foreground: 210 40% 98%;
+    --primary-glow: 258 100% 76%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Deep blue accent */
+    --secondary: 217 32% 17%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted colors for subtle elements */
+    --muted: 217 32% 15%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Neon accent - Electric cyan for CTAs */
+    --accent: 185 100% 60%;
+    --accent-foreground: 222 14% 8%;
+    --accent-glow: 185 100% 70%;
 
-    --destructive: 0 84.2% 60.2%;
+    /* Success - Neon green */
+    --success: 142 76% 56%;
+    --success-foreground: 222 14% 8%;
+
+    /* Warning - Electric orange */
+    --warning: 32 95% 58%;
+    --warning-foreground: 222 14% 8%;
+
+    --destructive: 0 72% 55%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 217 32% 20%;
+    --input: 217 32% 15%;
+    --ring: 258 90% 66%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Custom gradients for modern aesthetic */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-glow)));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
+    
+    /* Glow effects for neon aesthetic */
+    --glow-primary: 0 0 40px hsl(var(--primary) / 0.4);
+    --glow-accent: 0 0 40px hsl(var(--accent) / 0.4);
+    --shadow-card: 0 20px 40px -10px hsl(var(--primary) / 0.1);
+    --shadow-button: 0 8px 20px -5px hsl(var(--accent) / 0.3);
+
+    /* Animation variables */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
