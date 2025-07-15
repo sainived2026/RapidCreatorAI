@@ -26,6 +26,21 @@ const Dashboard = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_OUT' || !session) {
+          navigate("/login");
+        } else {
+          setUser(session.user);
+          // Defer profile fetching to avoid auth deadlock
+          setTimeout(() => {
+            fetchProfile(session.user.id);
+          }, 0);
+        }
+      }
+    );
+
+    // Check initial session
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -33,30 +48,21 @@ const Dashboard = () => {
         return;
       }
       setUser(session.user);
-      fetchProfile();
+      fetchProfile(session.user.id);
     };
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === 'SIGNED_OUT' || !session) {
-          navigate("/login");
-        } else {
-          setUser(session.user);
-          fetchProfile();
-        }
-      }
-    );
 
     getSession();
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const fetchProfile = async () => {
+  const fetchProfile = async (userId?: string) => {
     try {
+      const userIdToUse = userId || user?.id || (await supabase.auth.getUser()).data.user?.id;
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user?.id || (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', userIdToUse)
         .single();
       
       if (error) throw error;
@@ -190,7 +196,7 @@ const Dashboard = () => {
               History
             </Button>
             {profile.plan !== 'pro' && (
-              <Button variant="hero" size="sm" onClick={() => navigate("/plans")}>
+              <Button variant="default" size="sm" onClick={() => navigate("/plans")}>
                 <Crown className="h-4 w-4 mr-2" />
                 Upgrade to Pro
               </Button>
@@ -281,7 +287,6 @@ const Dashboard = () => {
                   onClick={handleGenerateContent} 
                   disabled={loading || !niche || !format || !style}
                   className="w-full"
-                  variant="hero"
                 >
                   {loading ? (
                     <>
