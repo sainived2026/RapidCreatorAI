@@ -106,7 +106,7 @@ const Login = () => {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="sainived2026@gmail.com"
+                    placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -117,7 +117,7 @@ const Login = () => {
                   <Input
                     id="password"
                     type="password"
-                    placeholder="••••••••"
+                    placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -127,7 +127,6 @@ const Login = () => {
                   type="submit" 
                   className="w-full" 
                   disabled={loading}
-                  variant="hero"
                 >
                   {loading ? "Signing in..." : "Sign In"}
                 </Button>
@@ -141,7 +140,7 @@ const Login = () => {
                   <Input
                     id="signup-email"
                     type="email"
-                    placeholder="sainived2026@gmail.com"
+                    placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -152,7 +151,7 @@ const Login = () => {
                   <Input
                     id="signup-password"
                     type="password"
-                    placeholder="••••••••"
+                    placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -162,7 +161,6 @@ const Login = () => {
                   type="submit" 
                   className="w-full" 
                   disabled={loading}
-                  variant="hero"
                 >
                   {loading ? "Creating account..." : "Create Account"}
                 </Button>
