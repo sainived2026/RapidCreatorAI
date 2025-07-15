@@ -22,6 +22,7 @@ const Dashboard = () => {
   const [generatedContent, setGeneratedContent] = useState<any>(null);
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
+  const [checkingSubscription, setCheckingSubscription] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -35,6 +36,7 @@ const Dashboard = () => {
           // Defer profile fetching to avoid auth deadlock
           setTimeout(() => {
             fetchProfile(session.user.id);
+            checkSubscription();
           }, 0);
         }
       }
@@ -49,6 +51,7 @@ const Dashboard = () => {
       }
       setUser(session.user);
       fetchProfile(session.user.id);
+      checkSubscription();
     };
 
     getSession();
@@ -70,6 +73,56 @@ const Dashboard = () => {
     } catch (error: any) {
       toast({
         title: "Error fetching profile",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const checkSubscription = async () => {
+    try {
+      setCheckingSubscription(true);
+      const { data, error } = await supabase.functions.invoke('check-subscription');
+      
+      if (error) throw error;
+      
+      // Refresh profile after subscription check
+      fetchProfile();
+    } catch (error: any) {
+      console.error('Error checking subscription:', error);
+    } finally {
+      setCheckingSubscription(false);
+    }
+  };
+
+  const handleUpgrade = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout');
+      
+      if (error) throw error;
+      
+      // Open Stripe checkout in new tab
+      window.open(data.url, '_blank');
+    } catch (error: any) {
+      toast({
+        title: "Error creating checkout",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('customer-portal');
+      
+      if (error) throw error;
+      
+      // Open customer portal in new tab
+      window.open(data.url, '_blank');
+    } catch (error: any) {
+      toast({
+        title: "Error opening customer portal",
         description: error.message,
         variant: "destructive",
       });
@@ -195,10 +248,15 @@ const Dashboard = () => {
               <History className="h-4 w-4 mr-2" />
               History
             </Button>
-            {profile.plan !== 'pro' && (
-              <Button variant="default" size="sm" onClick={() => navigate("/plans")}>
+            {profile.plan !== 'pro' ? (
+              <Button variant="default" size="sm" onClick={handleUpgrade}>
                 <Crown className="h-4 w-4 mr-2" />
                 Upgrade to Pro
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" onClick={handleManageSubscription}>
+                <Crown className="h-4 w-4 mr-2" />
+                Manage Subscription
               </Button>
             )}
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
