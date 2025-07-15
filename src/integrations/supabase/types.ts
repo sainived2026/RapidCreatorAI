@@ -103,10 +103,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      reset_daily_usage: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never

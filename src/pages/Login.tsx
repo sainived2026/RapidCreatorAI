@@ -22,7 +22,7 @@ const Login = () => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/app");
+        navigate("/dashboard");
       }
     };
     checkSession();
@@ -45,7 +45,7 @@ const Login = () => {
         description: "You've been successfully logged in.",
       });
 
-      navigate("/app");
+      navigate("/dashboard");
     } catch (error: any) {
       toast({
         title: "Error signing in",
@@ -66,7 +66,7 @@ const Login = () => {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/app`,
+          emailRedirectTo: `${window.location.origin}/dashboard`,
         },
       });
 
@@ -93,7 +93,7 @@ const Login = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/app`,
+          redirectTo: `${window.location.origin}/dashboard`,
         },
       });
 
