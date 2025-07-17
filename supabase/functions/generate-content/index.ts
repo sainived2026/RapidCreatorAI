@@ -13,6 +13,39 @@ const logStep = (step: string, details?: any) => {
   console.log(`[GENERATE-CONTENT] ${step}${detailsStr}`);
 };
 
+// Helper function to clean and parse JSON from OpenAI response
+const parseOpenAIResponse = (content: string) => {
+  try {
+    // First try to parse as is
+    return JSON.parse(content);
+  } catch {
+    // If that fails, try to extract JSON from markdown code blocks
+    const jsonMatch = content.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+    if (jsonMatch) {
+      try {
+        return JSON.parse(jsonMatch[1]);
+      } catch (e) {
+        logStep("Failed to parse extracted JSON", { extracted: jsonMatch[1], error: e.message });
+        throw new Error("Invalid JSON in code block");
+      }
+    }
+    
+    // Try to find JSON-like content without code blocks
+    const jsonStart = content.indexOf('{');
+    const jsonEnd = content.lastIndexOf('}');
+    if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+      try {
+        const extracted = content.substring(jsonStart, jsonEnd + 1);
+        return JSON.parse(extracted);
+      } catch (e) {
+        logStep("Failed to parse extracted JSON without blocks", { extracted: content.substring(jsonStart, jsonEnd + 1), error: e.message });
+      }
+    }
+    
+    throw new Error("No valid JSON found in response");
+  }
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -84,7 +117,7 @@ serve(async (req) => {
 
     logStep("Calling OpenAI API");
 
-    // Call OpenAI API
+    // Call OpenAI API with improved prompt
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -96,47 +129,95 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are an expert video content strategist. Based on the user's niche, format, and style, generate:
+            content: `You are an expert video content strategist. Generate content for viral videos.
 
-- 1 Viral Video Title (catchy and clickable)
-- 1 Description (max 200 characters, engaging)
-- 1 Script (under 100 words, ${videoLength})
-- 4 Hashtags (relevant to niche and trending)
-- 1 Thumbnail Text Line (short, impactful)
-- 1 Thumbnail Design Idea (detailed visual description)
+IMPORTANT: Respond ONLY with valid JSON. Do not include any markdown, explanations, or code blocks.
 
-Format your response as JSON with keys: title, description, script, hashtags, thumbnailText, thumbnailDesignIdea`
+Generate the following fields:
+- title: A catchy, clickable video title
+- description: Engaging description (max 200 characters)
+- script: Video script (under 100 words for ${videoLength})
+- hashtags: Array of 4 relevant hashtags including #
+- thumbnailText: Short, impactful text for thumbnail
+- thumbnailDesignIdea: Detailed visual description for thumbnail design
+
+Return as JSON with these exact keys: title, description, script, hashtags, thumbnailText, thumbnailDesignIdea`
           },
           {
             role: 'user',
-            content: `Niche: ${niche}\nFormat: ${format}\nStyle: ${style}\nVideo Length: ${videoLength}`
+            content: `Create viral video content for:
+Niche: ${niche}
+Format: ${format}
+Style: ${style}
+Video Length: ${videoLength}
+
+Return only valid JSON.`
           }
         ],
-        temperature: 0.8
+        temperature: 0.8,
+        max_tokens: 1000
       }),
     });
 
-    const openaiData = await openaiResponse.json();
-    
     if (!openaiResponse.ok) {
-      logStep("OpenAI API error", { status: openaiResponse.status, data: openaiData });
-      return new Response(JSON.stringify({ error: 'OpenAI API error' }), {
+      const errorData = await openaiResponse.json().catch(() => ({}));
+      logStep("OpenAI API error", { status: openaiResponse.status, data: errorData });
+      return new Response(JSON.stringify({ error: 'OpenAI API error', details: errorData }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
+    const openaiData = await openaiResponse.json();
     logStep("OpenAI response received");
 
-    let generatedContent;
-    try {
-      generatedContent = JSON.parse(openaiData.choices[0].message.content);
-    } catch (parseError) {
-      logStep("JSON parse error", { content: openaiData.choices[0].message.content });
-      return new Response(JSON.stringify({ error: 'Failed to parse AI response' }), {
+    if (!openaiData.choices || !openaiData.choices[0] || !openaiData.choices[0].message) {
+      logStep("Invalid OpenAI response structure", { data: openaiData });
+      return new Response(JSON.stringify({ error: 'Invalid response from OpenAI' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    const responseContent = openaiData.choices[0].message.content;
+    logStep("Raw OpenAI content", { content: responseContent });
+
+    let generatedContent;
+    try {
+      generatedContent = parseOpenAIResponse(responseContent);
+      logStep("Content parsed successfully", { generatedContent });
+    } catch (parseError) {
+      logStep("JSON parse error", { content: responseContent, error: parseError.message });
+      return new Response(JSON.stringify({ 
+        error: 'Failed to parse AI response',
+        details: parseError.message,
+        rawContent: responseContent
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate required fields
+    const requiredFields = ['title', 'description', 'script', 'hashtags', 'thumbnailText', 'thumbnailDesignIdea'];
+    const missingFields = requiredFields.filter(field => !generatedContent[field]);
+    
+    if (missingFields.length > 0) {
+      logStep("Missing required fields", { missingFields, generatedContent });
+      return new Response(JSON.stringify({ 
+        error: 'Generated content missing required fields',
+        missingFields,
+        generatedContent
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Ensure hashtags is an array and join if needed
+    let hashtags = generatedContent.hashtags;
+    if (Array.isArray(hashtags)) {
+      hashtags = hashtags.join(' ');
     }
 
     logStep("Content generated successfully");
@@ -153,7 +234,7 @@ Format your response as JSON with keys: title, description, script, hashtags, th
         title: generatedContent.title,
         description: generatedContent.description,
         script: generatedContent.script,
-        hashtags: generatedContent.hashtags,
+        hashtags: hashtags,
         thumbnail_text: generatedContent.thumbnailText,
         thumbnail_design_idea: generatedContent.thumbnailDesignIdea,
       })
@@ -162,7 +243,7 @@ Format your response as JSON with keys: title, description, script, hashtags, th
 
     if (saveError) {
       logStep("Content pack save error", { error: saveError });
-      return new Response(JSON.stringify({ error: 'Failed to save content pack' }), {
+      return new Response(JSON.stringify({ error: 'Failed to save content pack', details: saveError }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -184,7 +265,12 @@ Format your response as JSON with keys: title, description, script, hashtags, th
     logStep("Function completed successfully");
 
     return new Response(JSON.stringify({
-      ...generatedContent,
+      title: generatedContent.title,
+      description: generatedContent.description,
+      script: generatedContent.script,
+      hashtags: hashtags,
+      thumbnailText: generatedContent.thumbnailText,
+      thumbnailDesignIdea: generatedContent.thumbnailDesignIdea,
       id: contentPack?.id,
       remainingGenerations: profile.daily_generations_limit - profile.daily_generations_used - 1
     }), {
@@ -193,8 +279,11 @@ Format your response as JSON with keys: title, description, script, hashtags, th
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    logStep('ERROR in generate-content function', { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    logStep('ERROR in generate-content function', { message: errorMessage, stack: error.stack });
+    return new Response(JSON.stringify({ 
+      error: errorMessage,
+      type: 'function_error'
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
