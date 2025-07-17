@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -47,7 +48,7 @@ serve(async (req) => {
       logStep("Creating new customer");
     }
 
-    // Create checkout session
+    // Create checkout session with correct $6 pricing
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -56,7 +57,7 @@ serve(async (req) => {
           price_data: {
             currency: "usd",
             product_data: { name: "RapidCreator.ai Pro Plan" },
-            unit_amount: 2999, // $29.99
+            unit_amount: 600, // $6.00 (600 cents)
             recurring: { interval: "month" },
           },
           quantity: 1,
