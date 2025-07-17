@@ -14,7 +14,6 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("signin");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -31,7 +30,6 @@ const Login = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Sign in attempt with:', { email, password: password ? '***' : 'empty' });
     
     if (!email || !password) {
       toast({
@@ -46,11 +44,9 @@ const Login = () => {
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim(),
         password,
       });
-
-      console.log('Sign in response:', { data, error });
 
       if (error) throw error;
 
@@ -61,10 +57,9 @@ const Login = () => {
 
       navigate("/app");
     } catch (error: any) {
-      console.error('Sign in error:', error);
       toast({
         title: "Error signing in",
-        description: error.message,
+        description: error.message || "An error occurred during sign in",
         variant: "destructive",
       });
     } finally {
@@ -74,7 +69,6 @@ const Login = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Sign up attempt with:', { email, password: password ? '***' : 'empty' });
     
     if (!email || !password) {
       toast({
@@ -85,18 +79,25 @@ const Login = () => {
       return;
     }
 
+    if (password.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: email.trim(),
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/app`,
         },
       });
-
-      console.log('Sign up response:', { data, error });
 
       if (error) throw error;
 
@@ -105,10 +106,9 @@ const Login = () => {
         description: "Please check your email to confirm your account.",
       });
     } catch (error: any) {
-      console.error('Sign up error:', error);
       toast({
         title: "Error creating account",
-        description: error.message,
+        description: error.message || "An error occurred during sign up",
         variant: "destructive",
       });
     } finally {
@@ -130,7 +130,7 @@ const Login = () => {
     } catch (error: any) {
       toast({
         title: "Error signing in with Google",
-        description: error.message,
+        description: error.message || "An error occurred with Google sign in",
         variant: "destructive",
       });
       setLoading(false);
@@ -141,7 +141,7 @@ const Login = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-grid-pattern opacity-5" />
       
-      <Card className="w-full max-w-md border-border/50 shadow-2xl">
+      <Card className="w-full max-w-md border-border/50 shadow-2xl relative z-10">
         <CardHeader className="text-center">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
             <Sparkles className="h-8 w-8 text-primary" />
@@ -155,7 +155,7 @@ const Login = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs defaultValue="signin" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -172,6 +172,7 @@ const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={loading}
                     autoComplete="email"
                   />
                 </div>
@@ -184,6 +185,7 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    disabled={loading}
                     autoComplete="current-password"
                   />
                 </div>
@@ -204,6 +206,7 @@ const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={loading}
                     autoComplete="email"
                   />
                 </div>
@@ -212,11 +215,13 @@ const Login = () => {
                   <Input
                     id="signup-password"
                     type="password"
-                    placeholder="Create a password"
+                    placeholder="Create a password (min 6 characters)"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    disabled={loading}
                     autoComplete="new-password"
+                    minLength={6}
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
