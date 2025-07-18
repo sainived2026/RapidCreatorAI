@@ -547,26 +547,6 @@ const Dashboard = () => {
                   </CardContent>
                 </Card>
 
-                {/* Better CTAs */}
-                <Card className="mb-4">
-                  <CardContent className="pt-6">
-                    <div className="text-center space-y-4">
-                      <h3 className="text-lg font-semibold">Ready to Go Viral? 🚀</h3>
-                      <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                        <Button className="flex items-center gap-2" onClick={() => window.open('https://www.youtube.com/upload', '_blank')}>
-                          📹 Upload to YouTube
-                        </Button>
-                        <Button variant="outline" className="flex items-center gap-2" onClick={() => window.open('https://www.instagram.com/', '_blank')}>
-                          📊 Share on Instagram
-                        </Button>
-                        <Button variant="outline" className="flex items-center gap-2" onClick={() => window.open('https://www.tiktok.com/upload', '_blank')}>
-                          🎵 Post on TikTok
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
                 {/* Export Options */}
                 <ExportOptions 
                   generatedContent={generatedContent}

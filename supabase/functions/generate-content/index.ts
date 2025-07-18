@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -71,8 +70,8 @@ const generateThumbnail = async (thumbnailDesignIdea: string): Promise<string | 
           taskType: "imageInference",
           taskUUID: crypto.randomUUID(),
           positivePrompt: `Vertical thumbnail design: ${thumbnailDesignIdea}. High quality, eye-catching, professional vertical thumbnail with bold text and vivid colors, 9:16 aspect ratio, optimized for mobile viewing`,
-          width: 720, // Changed to 720 for 9:16 aspect ratio (720x1280)
-          height: 1280, // Changed to 1280 for 9:16 aspect ratio
+          width: 576, // 9 * 64 = 576 (valid multiple of 64)
+          height: 1024, // 16 * 64 = 1024 (valid multiple of 64)
           model: "runware:100@1",
           numberResults: 1,
           outputFormat: "WEBP",
