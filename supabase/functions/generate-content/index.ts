@@ -117,7 +117,7 @@ serve(async (req) => {
 
     logStep("Calling OpenAI API");
 
-    // Call OpenAI API with improved prompt
+    // Call OpenAI API with the new detailed prompt template
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -129,19 +129,42 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are an expert video content strategist. Generate content for viral videos.
+            content: `You're an expert short-form video creator who specializes in viral Instagram Reels, TikToks, and YouTube Shorts. Your job is to generate a complete content pack for a short video in the selected niche, style, and platform format. The content must be fast-paced, emotional, relatable, and attention-grabbing for viral potential.
 
 IMPORTANT: Respond ONLY with valid JSON. Do not include any markdown, explanations, or code blocks.
 
-Generate the following fields:
-- title: A catchy, clickable video title
-- description: Engaging description (max 200 characters)
-- script: Video script (under 100 words for ${videoLength})
-- hashtags: Array of 4 relevant hashtags including #
-- thumbnailText: Short, impactful text for thumbnail
-- thumbnailDesignIdea: Detailed visual description for thumbnail design
+Generate content with these specific requirements:
 
-Return as JSON with these exact keys: title, description, script, hashtags, thumbnailText, thumbnailDesignIdea`
+1. **Title** (Under 12 words):
+   - Use emotional hooks, curiosity, power words
+   - Examples: "I Lost Everything. Then This Happened.", "The Comeback No One Saw Coming"
+
+2. **Description** (Under 2 lines):
+   - Must hook the viewer emotionally
+   - Add 1-2 relevant emojis
+   - End with a CTA like "Watch till the end" or "You won't believe the ending"
+
+3. **Script** (30-60 seconds for ${videoLength}):
+   - Start with a viral hook
+   - Break into 3 parts: Hook → Problem/Emotion → Resolution/Power Message
+   - Use short, punchy, emotional lines
+   - Include only what's meant to be spoken on camera (no voiceover instructions)
+
+4. **Hashtags** (6-8 max):
+   - Mix trending & niche hashtags
+   - Include # symbol with each hashtag
+
+5. **Thumbnail Text** (2-6 words max):
+   - Short & bold
+   - Examples: "From Rock Bottom", "You Can't Break Me", "This Will Change You"
+
+6. **Thumbnail Design Idea**:
+   - Describe a powerful, detailed visual layout
+   - Include specific visual elements, colors, positioning
+
+Return as JSON with these exact keys: title, description, script, hashtags, thumbnailText, thumbnailDesignIdea
+
+The content must be highly creative, emotionally compelling, and optimized for short-form video virality.`
           },
           {
             role: 'user',
@@ -151,11 +174,13 @@ Format: ${format}
 Style: ${style}
 Video Length: ${videoLength}
 
-Return only valid JSON.`
+Generate content that's fast-paced, emotional, relatable, and attention-grabbing. Focus on viral hooks and emotional engagement.
+
+Return only valid JSON with the required fields.`
           }
         ],
         temperature: 0.8,
-        max_tokens: 1000
+        max_tokens: 1200
       }),
     });
 
