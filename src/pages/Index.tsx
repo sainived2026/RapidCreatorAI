@@ -69,51 +69,10 @@ const Index = () => {
     }
   };
 
-  const plans = [
-    {
-      name: "Free",
-      price: "$0",
-      period: "forever",
-      description: "Perfect for trying out the platform",
-      features: [
-        "4 content packs per day",
-        "All content formats",
-        "Basic support"
-      ],
-      limitations: [
-        "No regenerate option"
-      ],
-      cta: "Get Started Free",
-      popular: false
-    },
-    {
-      name: "Pro",
-      price: "$6",
-      period: "per month",
-      description: "For serious content creators",
-      features: [
-        "10 content packs per day",
-        "All content formats",
-        "Regenerate option",
-        "Priority support",
-        "HD thumbnail ideas",
-        "Advanced analytics"
-      ],
-      limitations: [],
-      cta: "Upgrade to Pro",
-      popular: true
-    }
-  ];
-
   return (
-    <div 
-      className="min-h-screen bg-cover bg-center bg-no-repeat relative"
-      style={{
-        backgroundImage: "url('/src/assets/hero-bg.jpg')",
-      }}
-    >
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/60"></div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 relative overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
       
       {/* Header */}
       <header className="relative z-10 bg-black/20 backdrop-blur-sm">
@@ -133,10 +92,10 @@ const Index = () => {
             ) : (
               <>
                 <Button variant="outline" onClick={() => navigate("/login")} className="border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-white">
-                  Sign In
+                  Login
                 </Button>
-                <Button onClick={() => navigate("/login")} className="bg-purple-600 hover:bg-purple-700">
-                  Get Started
+                <Button onClick={() => navigate("/login")} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                  Start Free Trial
                 </Button>
               </>
             )}
@@ -147,81 +106,111 @@ const Index = () => {
       {/* Hero Section */}
       <section className="relative z-10 container mx-auto px-4 py-20 text-center">
         <div className="max-w-4xl mx-auto">
+          {/* Purple badge */}
+          <div className="inline-flex items-center gap-2 bg-purple-600/20 backdrop-blur-sm border border-purple-500/30 rounded-full px-4 py-2 mb-8">
+            <Zap className="h-4 w-4 text-purple-400" />
+            <span className="text-purple-200 text-sm">Generate viral content in seconds</span>
+          </div>
+
           <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white">
-            Create Viral Content in Seconds
+            Generate viral{" "}
+            <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
+              video content packs
+            </span>
+            {" "}in seconds — with AI
           </h1>
-          <p className="text-xl text-purple-200 mb-8 max-w-2xl mx-auto">
-            Generate engaging YouTube Shorts, Instagram Reels, and TikTok videos with AI-powered scripts, thumbnails, and hashtags
+          
+          <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+            The AI-powered tool designed for content creators to instantly generate viral short-form video content for YouTube Shorts, Instagram Reels, and TikToks.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" onClick={handleGetStarted} className="text-lg px-8 py-6 bg-purple-600 hover:bg-purple-700">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <Button 
+              size="lg" 
+              onClick={handleGetStarted} 
+              className="text-lg px-8 py-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            >
               <Play className="h-5 w-5 mr-2" />
-              Get Started Free
-            </Button>
-            <Button size="lg" variant="outline" onClick={() => navigate("/plans")} className="text-lg px-8 py-6 border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-white">
-              View Plans
-              <ArrowRight className="h-5 w-5 ml-2" />
+              Start Creating for Free — No Card Needed
             </Button>
           </div>
           
-          <div className="flex items-center justify-center gap-8 text-sm text-purple-200">
+          <div className="flex items-center justify-center gap-8 text-sm text-gray-400">
             <div className="flex items-center gap-2">
               <Check className="h-4 w-4 text-green-400" />
-              <span>4 free content packs daily</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-green-400" />
-              <span>Upgrade anytime</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-green-400" />
-              <span>Cancel anytime</span>
+              <span>Free forever • No credit card required • 4 packs daily</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* 4 Steps Section */}
       <section className="relative z-10 container mx-auto px-4 py-20">
-        <h2 className="text-3xl font-bold text-center mb-12 text-white">
-          Everything You Need to Go Viral
-        </h2>
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4 text-white">
+            From Idea to Viral Content in <span className="text-purple-400">4 Simple Steps</span>
+          </h2>
+          <p className="text-xl text-gray-300">
+            Our AI works like ChatGPT, but specifically designed for short-form video content creation
+          </p>
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {[
             {
+              number: "1",
+              icon: <Users className="h-8 w-8 text-purple-400" />,
+              title: "Select Your Niche",
+              description: "Choose from Gaming, Finance, Motivation, and more specialized niches."
+            },
+            {
+              number: "2",
               icon: <Zap className="h-8 w-8 text-purple-400" />,
-              title: "AI-Powered Scripts",
-              description: "Generate engaging, viral-ready scripts tailored to your niche"
+              title: "Choose Format & Style",
+              description: "Pick YouTube Short, Instagram Reel, or TikTok with Hook-first, Storytelling, or Stats-based styles."
             },
             {
-              icon: <Video className="h-8 w-8 text-purple-400" />,
-              title: "Multiple Formats",
-              description: "YouTube Shorts, Instagram Reels, TikTok - all optimized"
+              number: "3",
+              icon: <Play className="h-8 w-8 text-purple-400" />,
+              title: "Set Video Length",
+              description: "Select your preferred duration - all optimized for under 60 seconds."
             },
             {
-              icon: <Image className="h-8 w-8 text-purple-400" />,
-              title: "Thumbnail Design",
-              description: "Professional thumbnail concepts that drive clicks"
-            },
-            {
-              icon: <History className="h-8 w-8 text-purple-400" />,
-              title: "Content History",
-              description: "Save and manage all your generated content"
+              number: "4",
+              icon: <Star className="h-8 w-8 text-purple-400" />,
+              title: "Generate Content Pack",
+              description: "Get viral title, script, hashtags, thumbnail text, and design ideas instantly."
             }
-          ].map((feature, index) => (
-            <Card key={index} className="text-center bg-black/40 backdrop-blur-sm border-purple-500/20">
-              <CardHeader>
-                <div className="flex justify-center mb-4">
-                  {feature.icon}
+          ].map((step, index) => (
+            <Card key={index} className="relative bg-gray-800/50 backdrop-blur-sm border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+              <CardHeader className="text-center pb-4">
+                <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-white font-bold text-lg">{step.number}</span>
                 </div>
-                <CardTitle className="text-xl text-white">{feature.title}</CardTitle>
+                <div className="flex justify-center mb-4">
+                  {step.icon}
+                </div>
+                <CardTitle className="text-xl text-white">{step.title}</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-purple-200">{feature.description}</p>
+              <CardContent className="text-center">
+                <p className="text-gray-300">{step.description}</p>
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        <div className="text-center mt-12">
+          <h3 className="text-2xl font-bold mb-4 text-white">
+            Don't skip content today — get your script in 1 click!
+          </h3>
+          <Button 
+            size="lg" 
+            onClick={handleGetStarted}
+            className="text-lg px-8 py-6 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
+          >
+            Generate Now
+            <ArrowRight className="h-5 w-5 ml-2" />
+          </Button>
         </div>
       </section>
 
@@ -229,117 +218,222 @@ const Index = () => {
       <section className="relative z-10 container mx-auto px-4 py-20">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4 text-white">
-            Simple Pricing for Every Creator
+            Simple Pricing for <span className="text-purple-400">Every Creator</span>
           </h2>
-          <p className="text-xl text-purple-200">
-            Start free, upgrade when you need more
+          <p className="text-xl text-gray-300">
+            Start free, upgrade when you need more power
           </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {plans.map((plan) => (
-            <Card key={plan.name} className={`relative bg-black/40 backdrop-blur-sm border-purple-500/20 ${plan.popular ? 'border-purple-400 shadow-lg shadow-purple-500/20' : ''}`}>
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-purple-600 text-white">
-                    <Crown className="h-3 w-3 mr-1" />
-                    Most Popular
-                  </Badge>
+          {/* Free Plan */}
+          <Card className="relative bg-gray-800/50 backdrop-blur-sm border-gray-700/50">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl text-white">Free Plan</CardTitle>
+              <div className="flex items-baseline justify-center gap-2">
+                <span className="text-4xl font-bold text-white">$0</span>
+              </div>
+              <CardDescription className="text-gray-300">Perfect for trying out the platform</CardDescription>
+            </CardHeader>
+            
+            <CardContent className="space-y-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                  <span className="text-sm text-gray-300">4 content packs per day</span>
                 </div>
-              )}
+                <div className="flex items-center gap-3">
+                  <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                  <span className="text-sm text-gray-300">All content formats (YouTube, TikTok, Reels)</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                  <span className="text-sm text-gray-300">Basic thumbnail ideas</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-red-400 text-sm">✗</span>
+                  <span className="text-sm text-gray-400">No regenerate button</span>
+                </div>
+              </div>
               
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl text-white">{plan.name}</CardTitle>
-                <div className="flex items-baseline justify-center gap-2">
-                  <span className="text-4xl font-bold text-purple-400">{plan.price}</span>
-                  <span className="text-purple-200">/{plan.period}</span>
+              <Button 
+                onClick={handleGetStarted}
+                className="w-full bg-gray-700 hover:bg-gray-600 text-white"
+              >
+                Get Started Free
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Pro Plan */}
+          <Card className="relative bg-gray-800/50 backdrop-blur-sm border-purple-500/50 shadow-lg shadow-purple-500/20">
+            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+              <Badge className="bg-purple-600 text-white">
+                Most Popular
+              </Badge>
+            </div>
+            
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl text-white">Pro Plan</CardTitle>
+              <div className="flex items-baseline justify-center gap-2">
+                <span className="text-4xl font-bold text-white">$6</span>
+                <span className="text-gray-300">/month</span>
+              </div>
+              <CardDescription className="text-gray-300">For serious content creators</CardDescription>
+            </CardHeader>
+            
+            <CardContent className="space-y-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                  <span className="text-sm text-gray-300">10 content packs per day</span>
                 </div>
-                <CardDescription className="text-purple-200">{plan.description}</CardDescription>
+                <div className="flex items-center gap-3">
+                  <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                  <span className="text-sm text-gray-300">Regenerate option for perfect content</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                  <span className="text-sm text-gray-300">HD thumbnail design ideas</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                  <span className="text-sm text-gray-300">Priority support</span>
+                </div>
+              </div>
+              
+              <Button 
+                onClick={() => navigate("/plans")}
+                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              >
+                Upgrade to Pro
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="relative z-10 container mx-auto px-4 py-20">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4 text-white">
+            Loved by <span className="text-purple-400">Content Creators</span>
+          </h2>
+          <p className="text-xl text-gray-300">
+            See what creators are saying about RapidCreator.ai
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            {
+              name: "Alex Chen",
+              role: "YouTube Creator",
+              content: "This tool has completely transformed my content creation process. I went from spending hours on scripts to generating viral content in minutes!"
+            },
+            {
+              name: "Sarah Martinez",
+              role: "TikTok Influencer",
+              content: "The AI understands what makes content viral. My engagement rates have increased by 300% since I started using RapidCreator.ai."
+            },
+            {
+              name: "Mike Johnson",
+              role: "Instagram Creator",
+              content: "As a faceless creator, this tool is a game-changer. The scripts are always on-point and the thumbnail ideas are genius!"
+            }
+          ].map((testimonial, index) => (
+            <Card key={index} className="bg-gray-800/50 backdrop-blur-sm border-gray-700/50">
+              <CardHeader>
+                <div className="flex items-center gap-1 mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                  ))}
+                </div>
               </CardHeader>
-              
-              <CardContent className="space-y-6">
-                <div className="space-y-3">
-                  {plan.features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
-                      <span className="text-sm text-purple-200">{feature}</span>
-                    </div>
-                  ))}
-                  
-                  {plan.limitations.map((limitation, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <span className="text-sm text-purple-300">{limitation}</span>
-                    </div>
-                  ))}
+              <CardContent>
+                <p className="text-gray-300 mb-4">"{testimonial.content}"</p>
+                <div>
+                  <p className="text-white font-medium">{testimonial.name}</p>
+                  <p className="text-gray-400 text-sm">{testimonial.role}</p>
                 </div>
-                
-                <Button 
-                  onClick={plan.name === "Free" ? handleGetStarted : () => navigate("/plans")}
-                  className="w-full"
-                  variant={plan.name === "Free" ? "outline" : "default"}
-                >
-                  {plan.cta}
-                </Button>
               </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="relative z-10 container mx-auto px-4 py-20">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4 text-white">
-            Trusted by Content Creators
+      {/* Final CTA Section */}
+      <section className="relative z-10 container mx-auto px-4 py-20 text-center">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-3xl font-bold mb-6 text-white">
+            Ready to Create <span className="text-purple-400">Viral Content?</span>
           </h2>
-          <div className="flex items-center justify-center gap-8 text-purple-200">
+          <p className="text-xl text-gray-300 mb-8">
+            Join thousands of content creators who are already using AI to generate viral video content packs in seconds.
+          </p>
+          <Button 
+            size="lg" 
+            onClick={handleGetStarted} 
+            className="text-lg px-8 py-6 bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600"
+          >
+            <Sparkles className="h-5 w-5 mr-2" />
+            Start Creating for Free — No Card Needed
+          </Button>
+          <div className="flex items-center justify-center gap-8 text-sm text-gray-400 mt-4">
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              <span>1000+ Creators</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-yellow-400" />
-              <span>4.9/5 Rating</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Zap className="h-5 w-5" />
-              <span>10M+ Views Generated</span>
+              <Check className="h-4 w-4 text-green-400" />
+              <span>4 free content packs daily • Upgrade anytime • Cancel anytime</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative z-10 container mx-auto px-4 py-20 text-center">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-3xl font-bold mb-6 text-white">
-            Ready to Create Viral Content?
-          </h2>
-          <p className="text-xl text-purple-200 mb-8">
-            Join thousands of creators who've grown their audience with AI-powered content
-          </p>
-          <Button size="lg" onClick={handleGetStarted} className="text-lg px-8 py-6 bg-purple-600 hover:bg-purple-700">
-            Start Creating Now - It's Free!
-          </Button>
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="relative z-10 bg-black/20 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-6 w-6 text-purple-400" />
-              <span className="font-bold text-white">
-                RapidCreator.ai
-              </span>
+      <footer className="relative z-10 bg-gray-900/50 backdrop-blur-sm border-t border-gray-800">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="h-6 w-6 text-purple-400" />
+                <span className="font-bold text-white">RapidCreator.ai</span>
+              </div>
+              <p className="text-gray-400 text-sm">
+                Generate viral video content packs in seconds with AI.
+              </p>
             </div>
-            <div className="flex items-center gap-6 text-sm text-purple-200">
-              <span>© 2024 RapidCreator.ai. All rights reserved.</span>
-              <a href="mailto:sainived2026@gmail.com" className="hover:text-purple-400">
-                Contact Us
-              </a>
+            
+            <div>
+              <h4 className="text-white font-medium mb-4">Product</h4>
+              <div className="space-y-2 text-sm">
+                <a href="#" className="text-gray-400 hover:text-white block">Features</a>
+                <a href="#" className="text-gray-400 hover:text-white block">Pricing</a>
+                <a href="#" className="text-gray-400 hover:text-white block">Demo</a>
+              </div>
             </div>
+            
+            <div>
+              <h4 className="text-white font-medium mb-4">Support</h4>
+              <div className="space-y-2 text-sm">
+                <a href="#" className="text-gray-400 hover:text-white block">Help Center</a>
+                <a href="#" className="text-gray-400 hover:text-white block">Contact</a>
+                <a href="#" className="text-gray-400 hover:text-white block">Status</a>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-white font-medium mb-4">Company</h4>
+              <div className="space-y-2 text-sm">
+                <a href="#" className="text-gray-400 hover:text-white block">About</a>
+                <a href="#" className="text-gray-400 hover:text-white block">Privacy</a>
+                <a href="#" className="text-gray-400 hover:text-white block">Terms</a>
+              </div>
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center">
+            <p className="text-gray-400 text-sm">
+              © 2024 RapidCreator.ai. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
