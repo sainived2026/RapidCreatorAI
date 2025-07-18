@@ -70,12 +70,20 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 relative overflow-hidden">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
+        style={{
+          backgroundImage: "url('/src/assets/hero-bg.jpg')"
+        }}
+      />
+      
+      {/* Overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/50" />
       
       {/* Header */}
-      <header className="relative z-10 bg-black/20 backdrop-blur-sm">
+      <header className="relative z-10 bg-transparent">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="h-8 w-8 text-purple-400" />
@@ -91,10 +99,10 @@ const Index = () => {
               </Button>
             ) : (
               <>
-                <Button variant="outline" onClick={() => navigate("/login")} className="border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-white">
+                <Button variant="outline" onClick={() => navigate("/login")} className="text-white border-white hover:bg-white hover:text-black">
                   Login
                 </Button>
-                <Button onClick={() => navigate("/login")} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                <Button onClick={() => navigate("/login")} className="bg-gradient-to-r from-purple-600 to-cyan-500">
                   Start Free Trial
                 </Button>
               </>
@@ -128,7 +136,7 @@ const Index = () => {
             <Button 
               size="lg" 
               onClick={handleGetStarted} 
-              className="text-lg px-8 py-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              className="text-lg px-8 py-6 bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600"
             >
               <Play className="h-5 w-5 mr-2" />
               Start Creating for Free — No Card Needed
@@ -182,7 +190,7 @@ const Index = () => {
               description: "Get viral title, script, hashtags, thumbnail text, and design ideas instantly."
             }
           ].map((step, index) => (
-            <Card key={index} className="relative bg-gray-800/50 backdrop-blur-sm border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+            <Card key={index} className="relative bg-gray-900/80 backdrop-blur-sm border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
               <CardHeader className="text-center pb-4">
                 <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-white font-bold text-lg">{step.number}</span>
@@ -227,7 +235,7 @@ const Index = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* Free Plan */}
-          <Card className="relative bg-gray-800/50 backdrop-blur-sm border-gray-700/50">
+          <Card className="relative bg-gray-900/80 backdrop-blur-sm border-gray-700/50">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl text-white">Free Plan</CardTitle>
               <div className="flex items-baseline justify-center gap-2">
@@ -266,7 +274,7 @@ const Index = () => {
           </Card>
 
           {/* Pro Plan */}
-          <Card className="relative bg-gray-800/50 backdrop-blur-sm border-purple-500/50 shadow-lg shadow-purple-500/20">
+          <Card className="relative bg-gray-900/80 backdrop-blur-sm border-purple-500/50 shadow-lg shadow-purple-500/20">
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
               <Badge className="bg-purple-600 text-white">
                 Most Popular
@@ -342,7 +350,7 @@ const Index = () => {
               content: "As a faceless creator, this tool is a game-changer. The scripts are always on-point and the thumbnail ideas are genius!"
             }
           ].map((testimonial, index) => (
-            <Card key={index} className="bg-gray-800/50 backdrop-blur-sm border-gray-700/50">
+            <Card key={index} className="bg-gray-900/80 backdrop-blur-sm border-gray-700/50">
               <CardHeader>
                 <div className="flex items-center gap-1 mb-2">
                   {[...Array(5)].map((_, i) => (
