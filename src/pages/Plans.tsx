@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -5,12 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, Crown, Check, X } from "lucide-react";
+import { Sparkles, Crown, Check, X, Loader2 } from "lucide-react";
 
 const Plans = () => {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [checkingPayment, setCheckingPayment] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -19,7 +21,7 @@ const Plans = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setUser(session.user);
-        fetchProfile();
+        fetchProfile(session.user.id);
       }
     };
 
@@ -27,7 +29,7 @@ const Plans = () => {
       (event, session) => {
         if (session) {
           setUser(session.user);
-          fetchProfile();
+          fetchProfile(session.user.id);
         }
       }
     );
@@ -36,18 +38,39 @@ const Plans = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchProfile = async () => {
+  const fetchProfile = async (userId?: string) => {
     try {
+      const userIdToUse = userId || user?.id || (await supabase.auth.getUser()).data.user?.id;
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user?.id || (await supabase.auth.getUser()).data.user?.id)
+        .eq('user_id', userIdToUse)
         .single();
       
       if (error) throw error;
       setProfile(data);
     } catch (error: any) {
       console.error('Error fetching profile:', error);
+    }
+  };
+
+  const checkSubscription = async () => {
+    try {
+      setCheckingPayment(true);
+      const { data, error } = await supabase.functions.invoke('check-subscription');
+      
+      if (error) throw error;
+      
+      // Refresh profile after subscription check
+      await fetchProfile();
+      
+      return data;
+    } catch (error: any) {
+      console.error('Error checking subscription:', error);
+      return null;
+    } finally {
+      setCheckingPayment(false);
     }
   };
 
@@ -63,7 +86,7 @@ const Plans = () => {
         .from('profiles')
         .update({ 
           plan: 'free',
-          daily_generations_limit: 2,
+          daily_generations_limit: 4,
           daily_generations_used: 0
         })
         .eq('user_id', user.id);
@@ -72,7 +95,7 @@ const Plans = () => {
 
       toast({
         title: "Free plan activated!",
-        description: "You now have 2 generations per day.",
+        description: "You now have 4 generations per day.",
       });
 
       navigate("/dashboard");
@@ -95,33 +118,67 @@ const Plans = () => {
 
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          plan: 'pro',
-          daily_generations_limit: 5,
-          daily_generations_used: 0
-        })
-        .eq('user_id', user.id);
-
+      // Create Stripe checkout session
+      const { data, error } = await supabase.functions.invoke('create-checkout');
+      
       if (error) throw error;
-
-      toast({
-        title: "🎉 You're now Pro!",
-        description: "Enjoy 5 daily generations and regenerations.",
-      });
-
-      navigate("/dashboard");
+      
+      if (data?.url) {
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error("Failed to create checkout session");
+      }
     } catch (error: any) {
       toast({
-        title: "Error updating plan",
+        title: "Error creating checkout",
         description: error.message,
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
     }
   };
+
+  // Check for payment status when component mounts
+  useEffect(() => {
+    const checkPaymentStatus = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const paymentStatus = urlParams.get('payment');
+      
+      if (paymentStatus === 'success') {
+        setCheckingPayment(true);
+        const subscriptionData = await checkSubscription();
+        
+        if (subscriptionData?.plan === 'pro') {
+          toast({
+            title: "🎉 You are now Pro!",
+            description: "Enjoy 10 daily generations and regenerations.",
+          });
+          // Clear the URL parameters
+          window.history.replaceState({}, document.title, window.location.pathname);
+          navigate("/dashboard");
+        } else {
+          toast({
+            title: "Sorry, payment did not complete successfully",
+            description: "Please try again or contact support.",
+            variant: "destructive",
+          });
+        }
+      } else if (paymentStatus === 'cancelled') {
+        toast({
+          title: "Payment cancelled",
+          description: "Your payment was cancelled. You can try again anytime.",
+          variant: "destructive",
+        });
+        // Clear the URL parameters
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    };
+
+    if (user) {
+      checkPaymentStatus();
+    }
+  }, [user]);
 
   const plans = [
     {
@@ -130,7 +187,7 @@ const Plans = () => {
       period: "forever",
       description: "Perfect for trying out the platform",
       features: [
-        "2 content packs per day",
+        "4 content packs per day",
         "All content formats",
         "Basic support",
         "No regenerate option"
@@ -150,7 +207,7 @@ const Plans = () => {
       period: "per month",
       description: "For serious content creators",
       features: [
-        "5 content packs per day",
+        "10 content packs per day",
         "All content formats",
         "Regenerate option",
         "Priority support",
@@ -164,6 +221,17 @@ const Plans = () => {
       popular: true
     }
   ];
+
+  if (checkingPayment) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-lg font-medium">Checking payment status...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
@@ -246,7 +314,16 @@ const Plans = () => {
                   className="w-full"
                   variant={plan.variant}
                 >
-                  {plan.current ? "Current Plan" : `Choose ${plan.name}`}
+                  {loading && plan.name === "Pro" ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : plan.current ? (
+                    "Current Plan"
+                  ) : (
+                    `Choose ${plan.name}`
+                  )}
                 </Button>
               </CardContent>
             </Card>
