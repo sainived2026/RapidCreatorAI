@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -63,7 +64,7 @@ const Plans = () => {
         .from('profiles')
         .update({ 
           plan: 'free',
-          daily_generations_limit: 2,
+          daily_generations_limit: 4,
           daily_generations_used: 0
         })
         .eq('user_id', user.id);
@@ -72,7 +73,7 @@ const Plans = () => {
 
       toast({
         title: "Free plan activated!",
-        description: "You now have 2 generations per day.",
+        description: "You now have 4 generations per day.",
       });
 
       navigate("/dashboard");
@@ -95,27 +96,31 @@ const Plans = () => {
 
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          plan: 'pro',
-          daily_generations_limit: 5,
-          daily_generations_used: 0
-        })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "🎉 You're now Pro!",
-        description: "Enjoy 5 daily generations and regenerations.",
+      console.log('Creating Stripe checkout session...');
+      
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        headers: {
+          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+        },
       });
 
-      navigate("/dashboard");
+      if (error) {
+        console.error('Error creating checkout session:', error);
+        throw error;
+      }
+
+      if (data?.url) {
+        console.log('Redirecting to Stripe checkout:', data.url);
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
     } catch (error: any) {
+      console.error('Stripe checkout error:', error);
       toast({
-        title: "Error updating plan",
-        description: error.message,
+        title: "Error starting checkout",
+        description: error.message || "Failed to start payment process",
         variant: "destructive",
       });
     } finally {
@@ -130,7 +135,7 @@ const Plans = () => {
       period: "forever",
       description: "Perfect for trying out the platform",
       features: [
-        "2 content packs per day",
+        "4 content packs per day",
         "All content formats",
         "Basic support",
         "No regenerate option"
@@ -150,7 +155,7 @@ const Plans = () => {
       period: "per month",
       description: "For serious content creators",
       features: [
-        "5 content packs per day",
+        "10 content packs per day",
         "All content formats",
         "Regenerate option",
         "Priority support",
