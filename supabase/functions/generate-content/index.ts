@@ -226,17 +226,15 @@ Generate content with these specific requirements:
    - Mix trending & niche hashtags
    - Include # symbol with each hashtag
 
-5. **Thumbnail Design Idea**:
-   - Create a comprehensive, professional thumbnail concept with specific visual elements
-   - Include: Main subject positioning, background style, color scheme, text overlay details
-   - Specify: Font styles, text placement, visual effects, facial expressions, lighting
-   - Focus on high-contrast, bold colors, and eye-catching composition
-   - Make it optimized for mobile viewing and maximum click-through rate
-   - Include specific details about: composition, lighting, color psychology, text hierarchy
+5. **Thumbnail Design Idea** (as a single descriptive string):
+   - Create a comprehensive, professional thumbnail concept
+   - Include specific visual elements, composition, colors, text overlay
+   - Focus on high-contrast, bold colors, eye-catching composition
+   - Optimized for mobile viewing and maximum click-through rate
 
 Return as JSON with these exact keys: title, description, script, hashtags, thumbnailDesignIdea
 
-The content must be highly creative, emotionally compelling, and optimized for short-form video virality.`
+The thumbnailDesignIdea should be a single detailed string describing the thumbnail concept.`
           },
           {
             role: 'user',
@@ -248,13 +246,7 @@ Video Length: ${videoLength}
 
 Generate content that's fast-paced, emotional, relatable, and attention-grabbing. Focus on viral hooks and emotional engagement.
 
-For the thumbnail design idea, create a detailed, professional concept that includes:
-- Specific composition and layout
-- Color palette and contrast details
-- Text overlay positioning and styling
-- Visual elements and effects
-- Lighting and mood specifications
-- Elements that maximize click-through rate
+For the thumbnailDesignIdea, provide a single comprehensive string that describes the thumbnail concept in detail including composition, colors, text overlay, and visual elements.
 
 Return only valid JSON with the required fields.`
           }
@@ -332,9 +324,18 @@ Return only valid JSON with the required fields.`
       hashtags = hashtags.join(' ');
     }
 
+    // Convert thumbnailDesignIdea to string if it's an object
+    let thumbnailDesignIdea = generatedContent.thumbnailDesignIdea;
+    if (typeof thumbnailDesignIdea === 'object') {
+      // Convert object to descriptive string
+      thumbnailDesignIdea = Object.entries(thumbnailDesignIdea)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(', ');
+    }
+
     // Generate thumbnail image using Runware
     logStep("Generating thumbnail image");
-    const thumbnailUrl = await generateThumbnail(generatedContent.thumbnailDesignIdea);
+    const thumbnailUrl = await generateThumbnail(thumbnailDesignIdea);
 
     logStep("Content generated successfully");
 
@@ -351,7 +352,7 @@ Return only valid JSON with the required fields.`
         description: generatedContent.description,
         script: generatedContent.script,
         hashtags: hashtags,
-        thumbnail_design_idea: generatedContent.thumbnailDesignIdea,
+        thumbnail_design_idea: thumbnailDesignIdea,
       })
       .select()
       .single();
@@ -388,7 +389,7 @@ Return only valid JSON with the required fields.`
       description: generatedContent.description,
       script: generatedContent.script,
       hashtags: hashtags,
-      thumbnailDesignIdea: generatedContent.thumbnailDesignIdea,
+      thumbnailDesignIdea: thumbnailDesignIdea,
       thumbnailUrl: thumbnailUrl,
       id: contentPack?.id,
       remainingGenerations: profile.daily_generations_limit - profile.daily_generations_used - 1
