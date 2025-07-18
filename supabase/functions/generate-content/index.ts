@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -72,7 +71,7 @@ const generateThumbnail = async (thumbnailDesignIdea: string): Promise<string | 
           taskUUID: crypto.randomUUID(),
           positivePrompt: `YouTube thumbnail design: ${thumbnailDesignIdea}. High quality, eye-catching, professional thumbnail with bold text and vivid colors, 16:9 aspect ratio`,
           width: 1280,
-          height: 720,
+          height: 704, // Changed from 720 to 704 (multiple of 64: 11 * 64 = 704)
           model: "runware:100@1",
           numberResults: 1,
           outputFormat: "WEBP",
