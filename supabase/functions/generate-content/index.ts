@@ -1,4 +1,5 @@
 
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -43,6 +44,45 @@ const parseOpenAIResponse = (content: string) => {
     }
     
     throw new Error("No valid JSON found in response");
+  }
+};
+
+// Helper function to generate thumbnail using DeepAI
+const generateThumbnail = async (thumbnailDesignIdea: string): Promise<string | null> => {
+  try {
+    const deepaiApiKey = Deno.env.get('DEEPAI_API_KEY');
+    if (!deepaiApiKey) {
+      logStep("DeepAI API key not found");
+      return null;
+    }
+
+    logStep("Generating thumbnail with DeepAI", { prompt: thumbnailDesignIdea });
+
+    const response = await fetch('https://api.deepai.org/api/text2img', {
+      method: 'POST',
+      headers: {
+        'Api-Key': deepaiApiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text: `YouTube thumbnail design: ${thumbnailDesignIdea}. High quality, eye-catching, professional thumbnail with bold text and vivid colors.`,
+        width: 1280,
+        height: 720,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      logStep("DeepAI API error", { status: response.status, error: errorData });
+      return null;
+    }
+
+    const data = await response.json();
+    logStep("DeepAI thumbnail generated successfully", { url: data.output_url });
+    return data.output_url;
+  } catch (error) {
+    logStep("Error generating thumbnail", { error: error.message });
+    return null;
   }
 };
 
@@ -117,7 +157,7 @@ serve(async (req) => {
 
     logStep("Calling OpenAI API");
 
-    // Call OpenAI API with the new detailed prompt template
+    // Call OpenAI API with the updated prompt (removed thumbnailText)
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -154,15 +194,12 @@ Generate content with these specific requirements:
    - Mix trending & niche hashtags
    - Include # symbol with each hashtag
 
-5. **Thumbnail Text** (2-6 words max):
-   - Short & bold
-   - Examples: "From Rock Bottom", "You Can't Break Me", "This Will Change You"
+5. **Thumbnail Design Idea**:
+   - Describe a powerful, detailed visual layout for a YouTube thumbnail
+   - Include specific visual elements, colors, positioning, text placement
+   - Make it eye-catching and clickable for maximum engagement
 
-6. **Thumbnail Design Idea**:
-   - Describe a powerful, detailed visual layout
-   - Include specific visual elements, colors, positioning
-
-Return as JSON with these exact keys: title, description, script, hashtags, thumbnailText, thumbnailDesignIdea
+Return as JSON with these exact keys: title, description, script, hashtags, thumbnailDesignIdea
 
 The content must be highly creative, emotionally compelling, and optimized for short-form video virality.`
           },
@@ -223,8 +260,8 @@ Return only valid JSON with the required fields.`
       });
     }
 
-    // Validate required fields
-    const requiredFields = ['title', 'description', 'script', 'hashtags', 'thumbnailText', 'thumbnailDesignIdea'];
+    // Validate required fields (removed thumbnailText)
+    const requiredFields = ['title', 'description', 'script', 'hashtags', 'thumbnailDesignIdea'];
     const missingFields = requiredFields.filter(field => !generatedContent[field]);
     
     if (missingFields.length > 0) {
@@ -245,9 +282,13 @@ Return only valid JSON with the required fields.`
       hashtags = hashtags.join(' ');
     }
 
+    // Generate thumbnail image using DeepAI
+    logStep("Generating thumbnail image");
+    const thumbnailUrl = await generateThumbnail(generatedContent.thumbnailDesignIdea);
+
     logStep("Content generated successfully");
 
-    // Save content pack to database
+    // Save content pack to database (removed thumbnail_text field)
     const { data: contentPack, error: saveError } = await supabaseClient
       .from('content_packs')
       .insert({
@@ -260,7 +301,6 @@ Return only valid JSON with the required fields.`
         description: generatedContent.description,
         script: generatedContent.script,
         hashtags: hashtags,
-        thumbnail_text: generatedContent.thumbnailText,
         thumbnail_design_idea: generatedContent.thumbnailDesignIdea,
       })
       .select()
@@ -294,8 +334,8 @@ Return only valid JSON with the required fields.`
       description: generatedContent.description,
       script: generatedContent.script,
       hashtags: hashtags,
-      thumbnailText: generatedContent.thumbnailText,
       thumbnailDesignIdea: generatedContent.thumbnailDesignIdea,
+      thumbnailUrl: thumbnailUrl, // Include the generated thumbnail URL
       id: contentPack?.id,
       remainingGenerations: profile.daily_generations_limit - profile.daily_generations_used - 1
     }), {
@@ -314,3 +354,4 @@ Return only valid JSON with the required fields.`
     });
   }
 });
+

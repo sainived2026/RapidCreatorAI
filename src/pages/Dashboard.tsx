@@ -513,16 +513,28 @@ const Dashboard = () => {
                     
                     <Separator />
                     
+                    {/* Updated thumbnail section to show generated image */}
                     <div>
-                      <h3 className="font-semibold mb-2">🖼️ Thumbnail Text:</h3>
-                      <p className="text-foreground">{generatedContent.thumbnailText}</p>
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div>
-                      <h3 className="font-semibold mb-2">🖼️ Thumbnail Design Idea:</h3>
-                      <p className="text-foreground">{generatedContent.thumbnailDesignIdea}</p>
+                      <h3 className="font-semibold mb-2">🖼️ Generated Thumbnail:</h3>
+                      {generatedContent.thumbnailUrl ? (
+                        <div className="space-y-2">
+                          <img 
+                            src={generatedContent.thumbnailUrl} 
+                            alt="Generated Thumbnail" 
+                            className="max-w-md rounded-lg border"
+                          />
+                          <p className="text-sm text-muted-foreground">
+                            <strong>Design Concept:</strong> {generatedContent.thumbnailDesignIdea}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <p className="text-muted-foreground">Thumbnail generation unavailable</p>
+                          <p className="text-sm text-muted-foreground">
+                            <strong>Design Idea:</strong> {generatedContent.thumbnailDesignIdea}
+                          </p>
+                        </div>
+                      )}
                     </div>
                     
                     {profile.plan === 'pro' && (
@@ -614,7 +626,7 @@ const Dashboard = () => {
                     <div className="space-y-2 text-sm">
                       <p><strong>Script:</strong> {item.script}</p>
                       <p><strong>Hashtags:</strong> {item.hashtags}</p>
-                      <p><strong>Thumbnail Text:</strong> {item.thumbnail_text}</p>
+                      <p><strong>Thumbnail Design:</strong> {item.thumbnail_design_idea}</p>
                     </div>
                   </CardContent>
                 </Card>
