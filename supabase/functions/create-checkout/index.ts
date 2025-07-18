@@ -64,8 +64,8 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
-      success_url: `${req.headers.get("origin")}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin")}/plans?payment=cancelled`,
+      success_url: `${req.headers.get("origin")}/app?payment=success`,
+      cancel_url: `${req.headers.get("origin")}/app?payment=cancelled`,
     });
 
     logStep("Checkout session created", { sessionId: session.id });
