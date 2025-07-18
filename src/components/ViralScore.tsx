@@ -10,6 +10,7 @@ interface ViralScoreProps {
     description: string;
     script: string;
     hashtags: string;
+    thumbnailDesignIdea: string;
   };
   niche: string;
   style: string;
@@ -21,6 +22,7 @@ const ViralScore = ({ generatedContent, niche, style }: ViralScoreProps) => {
     titleScore: 0,
     scriptScore: 0,
     hashtagScore: 0,
+    thumbnailScore: 0,
   });
 
   useEffect(() => {
@@ -31,35 +33,45 @@ const ViralScore = ({ generatedContent, niche, style }: ViralScoreProps) => {
     let titleScore = 0;
     let scriptScore = 0;
     let hashtagScore = 0;
+    let thumbnailScore = 0;
 
-    // Title scoring (max 35 points)
+    // Title scoring (max 30 points)
     const titleWords = generatedContent.title.toLowerCase();
     const viralTitleWords = ['secret', 'shocking', 'you won\'t believe', 'amazing', 'viral', 'mind-blowing', 'insane'];
     viralTitleWords.forEach(word => {
-      if (titleWords.includes(word)) titleScore += 5;
+      if (titleWords.includes(word)) titleScore += 4;
     });
-    if (generatedContent.title.includes('?') || generatedContent.title.includes('!')) titleScore += 10;
-    if (generatedContent.title.length > 30 && generatedContent.title.length < 60) titleScore += 15;
+    if (generatedContent.title.includes('?') || generatedContent.title.includes('!')) titleScore += 8;
+    if (generatedContent.title.length > 30 && generatedContent.title.length < 60) titleScore += 10;
 
-    // Script scoring (max 40 points)
+    // Script scoring (max 35 points)
     const scriptWords = generatedContent.script.split(' ').length;
-    if (scriptWords >= 40 && scriptWords <= 80) scriptScore += 20;
+    if (scriptWords >= 40 && scriptWords <= 80) scriptScore += 15;
     const actionWords = ['watch', 'see', 'look', 'check', 'follow', 'like', 'subscribe'];
     actionWords.forEach(word => {
       if (generatedContent.script.toLowerCase().includes(word)) scriptScore += 5;
     });
 
-    // Hashtag scoring (max 25 points)
+    // Hashtag scoring (max 20 points)
     const hashtagCount = (generatedContent.hashtags.match(/#/g) || []).length;
-    if (hashtagCount >= 3 && hashtagCount <= 8) hashtagScore += 15;
+    if (hashtagCount >= 3 && hashtagCount <= 8) hashtagScore += 10;
     if (generatedContent.hashtags.toLowerCase().includes('#viral')) hashtagScore += 10;
 
-    const totalScore = Math.min(titleScore + scriptScore + hashtagScore, 100);
+    // Thumbnail scoring (max 15 points)
+    const thumbnailIdea = generatedContent.thumbnailDesignIdea.toLowerCase();
+    const visualWords = ['bold', 'bright', 'colorful', 'contrast', 'eye-catching', 'vibrant'];
+    visualWords.forEach(word => {
+      if (thumbnailIdea.includes(word)) thumbnailScore += 2;
+    });
+    if (thumbnailIdea.includes('text') || thumbnailIdea.includes('title')) thumbnailScore += 3;
+
+    const totalScore = Math.min(titleScore + scriptScore + hashtagScore + thumbnailScore, 100);
 
     setScoreBreakdown({
-      titleScore: Math.min(titleScore, 35),
-      scriptScore: Math.min(scriptScore, 40),
-      hashtagScore: Math.min(hashtagScore, 25),
+      titleScore: Math.min(titleScore, 30),
+      scriptScore: Math.min(scriptScore, 35),
+      hashtagScore: Math.min(hashtagScore, 20),
+      thumbnailScore: Math.min(thumbnailScore, 15),
     });
     setViralScore(totalScore);
   };
@@ -102,15 +114,19 @@ const ViralScore = ({ generatedContent, niche, style }: ViralScoreProps) => {
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-sm">Title Hook</span>
-            <Badge variant="outline">{scoreBreakdown.titleScore}/35</Badge>
+            <Badge variant="outline">{scoreBreakdown.titleScore}/30</Badge>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm">Script Engagement</span>
-            <Badge variant="outline">{scoreBreakdown.scriptScore}/40</Badge>
+            <Badge variant="outline">{scoreBreakdown.scriptScore}/35</Badge>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm">Hashtag Power</span>
-            <Badge variant="outline">{scoreBreakdown.hashtagScore}/25</Badge>
+            <Badge variant="outline">{scoreBreakdown.hashtagScore}/20</Badge>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-sm">Thumbnail Appeal</span>
+            <Badge variant="outline">{scoreBreakdown.thumbnailScore}/15</Badge>
           </div>
         </div>
 

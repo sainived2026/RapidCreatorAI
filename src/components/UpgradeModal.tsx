@@ -48,40 +48,40 @@ const UpgradeModal = ({ onUpgrade, children }: UpgradeModalProps) => {
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-2xl">
-            <Crown className="h-6 w-6 text-yellow-500" />
+          <DialogTitle className="flex items-center gap-2 text-xl">
+            <Crown className="h-5 w-5 text-yellow-500" />
             Upgrade to Pro
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="text-center">
-            <div className="text-4xl font-bold">$6<span className="text-lg font-normal text-muted-foreground">/month</span></div>
+            <div className="text-3xl font-bold">$6<span className="text-sm font-normal text-muted-foreground">/month</span></div>
             <Badge className="mt-2" variant="secondary">
               Cancel anytime
             </Badge>
           </div>
 
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {proFeatures.map((feature, index) => (
-              <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
+              <div key={index} className="flex items-start gap-2 p-2 rounded-lg bg-muted/30">
                 <div className="text-primary mt-0.5">
                   {feature.icon}
                 </div>
-                <div>
-                  <h4 className="font-semibold">{feature.title}</h4>
-                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-sm">{feature.title}</h4>
+                  <p className="text-xs text-muted-foreground">{feature.description}</p>
                 </div>
-                <Check className="h-4 w-4 text-green-500 mt-0.5 ml-auto flex-shrink-0" />
+                <Check className="h-3 w-3 text-green-500 mt-0.5 flex-shrink-0" />
               </div>
             ))}
           </div>
 
-          <div className="bg-gradient-to-r from-primary/10 to-accent/10 p-4 rounded-lg">
-            <h3 className="font-semibold mb-2">🚀 Perfect for Content Creators</h3>
-            <p className="text-sm text-muted-foreground">
+          <div className="bg-gradient-to-r from-primary/10 to-accent/10 p-3 rounded-lg">
+            <h3 className="font-semibold mb-1 text-sm">🚀 Perfect for Content Creators</h3>
+            <p className="text-xs text-muted-foreground">
               Join thousands of creators who've gone viral with our AI-powered content generation. 
               Start creating professional content that gets views, engagement, and grows your audience.
             </p>
@@ -90,7 +90,7 @@ const UpgradeModal = ({ onUpgrade, children }: UpgradeModalProps) => {
           <Button 
             onClick={onUpgrade} 
             className="w-full" 
-            size="lg"
+            size="sm"
           >
             <Crown className="h-4 w-4 mr-2" />
             Start Pro Plan - $6/month

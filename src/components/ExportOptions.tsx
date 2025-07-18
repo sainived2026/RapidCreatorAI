@@ -13,6 +13,7 @@ interface ExportOptionsProps {
     hashtags: string;
     thumbnailText: string;
     thumbnailDesignIdea: string;
+    thumbnailUrl?: string;
   };
   niche: string;
   format: string;
@@ -39,8 +40,10 @@ const ExportOptions = ({ generatedContent, niche, format, style }: ExportOptions
     }
   };
 
-  const downloadThumbnailIdea = () => {
-    const thumbnailContent = `THUMBNAIL DESIGN IDEA
+  const downloadThumbnail = async () => {
+    if (!generatedContent.thumbnailUrl) {
+      // Fallback to text file if no thumbnail URL
+      const thumbnailContent = `THUMBNAIL DESIGN IDEA
 ${generatedContent.thumbnailDesignIdea}
 
 THUMBNAIL TEXT
@@ -50,20 +53,47 @@ Format: ${format}
 Style: ${style}
 Niche: ${niche}`;
 
-    const blob = new Blob([thumbnailContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `thumbnail-idea-${Date.now()}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    toast({
-      title: "Downloaded!",
-      description: "Thumbnail idea saved as text file",
-    });
+      const blob = new Blob([thumbnailContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `thumbnail-idea-${Date.now()}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Downloaded!",
+        description: "Thumbnail idea saved as text file",
+      });
+      return;
+    }
+
+    try {
+      // Download the actual thumbnail image
+      const response = await fetch(generatedContent.thumbnailUrl);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `thumbnail-${Date.now()}.webp`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Downloaded!",
+        description: "Thumbnail image downloaded successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to download thumbnail",
+        variant: "destructive",
+      });
+    }
   };
 
   const exportFullPack = async (format: 'txt' | 'pdf') => {
@@ -139,7 +169,7 @@ CONTENT DETAILS:
           <Button
             variant="outline"
             size="sm"
-            onClick={downloadThumbnailIdea}
+            onClick={downloadThumbnail}
             className="flex items-center gap-2"
           >
             <Image className="h-3 w-3" />
