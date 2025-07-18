@@ -13,8 +13,8 @@ const UpgradeModal = ({ onUpgrade, children }: UpgradeModalProps) => {
   const proFeatures = [
     {
       icon: <Zap className="h-4 w-4" />,
-      title: "Unlimited Content Generation",
-      description: "Generate as many viral content packs as you need"
+      title: "10 Content Generations Daily",
+      description: "Generate 10 viral content packs per day"
     },
     {
       icon: <Video className="h-4 w-4" />,
@@ -48,40 +48,40 @@ const UpgradeModal = ({ onUpgrade, children }: UpgradeModalProps) => {
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <Crown className="h-5 w-5 text-yellow-500" />
+          <DialogTitle className="flex items-center gap-2 text-lg">
+            <Crown className="h-4 w-4 text-yellow-500" />
             Upgrade to Pro
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="text-center">
-            <div className="text-3xl font-bold">$6<span className="text-sm font-normal text-muted-foreground">/month</span></div>
-            <Badge className="mt-2" variant="secondary">
+            <div className="text-2xl font-bold">$6<span className="text-xs font-normal text-muted-foreground">/month</span></div>
+            <Badge className="mt-1" variant="secondary">
               Cancel anytime
             </Badge>
           </div>
 
-          <div className="grid gap-3">
+          <div className="grid gap-2">
             {proFeatures.map((feature, index) => (
               <div key={index} className="flex items-start gap-2 p-2 rounded-lg bg-muted/30">
                 <div className="text-primary mt-0.5">
                   {feature.icon}
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-semibold text-sm">{feature.title}</h4>
-                  <p className="text-xs text-muted-foreground">{feature.description}</p>
+                  <h4 className="font-medium text-xs">{feature.title}</h4>
+                  <p className="text-xs text-muted-foreground leading-tight">{feature.description}</p>
                 </div>
                 <Check className="h-3 w-3 text-green-500 mt-0.5 flex-shrink-0" />
               </div>
             ))}
           </div>
 
-          <div className="bg-gradient-to-r from-primary/10 to-accent/10 p-3 rounded-lg">
-            <h3 className="font-semibold mb-1 text-sm">🚀 Perfect for Content Creators</h3>
-            <p className="text-xs text-muted-foreground">
+          <div className="bg-gradient-to-r from-primary/10 to-accent/10 p-2 rounded-lg">
+            <h3 className="font-medium mb-1 text-xs">🚀 Perfect for Content Creators</h3>
+            <p className="text-xs text-muted-foreground leading-tight">
               Join thousands of creators who've gone viral with our AI-powered content generation. 
               Start creating professional content that gets views, engagement, and grows your audience.
             </p>

@@ -513,25 +513,28 @@ const Dashboard = () => {
                     
                     <Separator />
                     
-                    {/* Updated thumbnail section to show generated image */}
+                    {/* Enhanced thumbnail section */}
                     <div>
-                      <h3 className="font-semibold mb-2">🖼️ Generated Thumbnail:</h3>
+                      <h3 className="font-semibold mb-2">🖼️ Thumbnail Design:</h3>
                       {generatedContent.thumbnailUrl ? (
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           <img 
                             src={generatedContent.thumbnailUrl} 
                             alt="Generated Thumbnail" 
                             className="max-w-md rounded-lg border"
                           />
-                          <p className="text-sm text-muted-foreground">
-                            <strong>Design Concept:</strong> {generatedContent.thumbnailDesignIdea}
-                          </p>
+                          <div className="bg-muted/50 p-3 rounded-lg">
+                            <h4 className="font-medium text-sm mb-1">Design Concept:</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {generatedContent.thumbnailDesignIdea}
+                            </p>
+                          </div>
                         </div>
                       ) : (
-                        <div className="space-y-2">
-                          <p className="text-muted-foreground">Thumbnail generation unavailable</p>
+                        <div className="bg-muted/50 p-3 rounded-lg">
+                          <h4 className="font-medium text-sm mb-1">Design Concept:</h4>
                           <p className="text-sm text-muted-foreground">
-                            <strong>Design Idea:</strong> {generatedContent.thumbnailDesignIdea}
+                            {generatedContent.thumbnailDesignIdea}
                           </p>
                         </div>
                       )}
