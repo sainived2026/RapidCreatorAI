@@ -46,44 +46,59 @@ const parseOpenAIResponse = (content: string) => {
   }
 };
 
-// Helper function to generate thumbnail using DeepAI
+// Helper function to generate thumbnail using Runware
 const generateThumbnail = async (thumbnailDesignIdea: string): Promise<string | null> => {
   try {
-    const deepaiApiKey = Deno.env.get('DEEPAI_API_KEY');
-    if (!deepaiApiKey) {
-      logStep("DeepAI API key not found");
+    const runwareApiKey = Deno.env.get('RUNWARE_API_KEY');
+    if (!runwareApiKey) {
+      logStep("Runware API key not found");
       return null;
     }
 
-    logStep("Generating thumbnail with DeepAI", { prompt: thumbnailDesignIdea });
+    logStep("Generating thumbnail with Runware", { prompt: thumbnailDesignIdea });
 
-    const formData = new FormData();
-    formData.append('text', `YouTube thumbnail design: ${thumbnailDesignIdea}. High quality, eye-catching, professional thumbnail with bold text and vivid colors.`);
-    formData.append('width', '1280');
-    formData.append('height', '720');
-
-    const response = await fetch('https://api.deepai.org/api/text2img', {
+    const response = await fetch('https://api.runware.ai/v1', {
       method: 'POST',
       headers: {
-        'Api-Key': deepaiApiKey,
+        'Content-Type': 'application/json',
       },
-      body: formData,
+      body: JSON.stringify([
+        {
+          taskType: "authentication",
+          apiKey: runwareApiKey,
+        },
+        {
+          taskType: "imageInference",
+          taskUUID: crypto.randomUUID(),
+          positivePrompt: `YouTube thumbnail design: ${thumbnailDesignIdea}. High quality, eye-catching, professional thumbnail with bold text and vivid colors, 16:9 aspect ratio`,
+          width: 1280,
+          height: 720,
+          model: "runware:100@1",
+          numberResults: 1,
+          outputFormat: "WEBP",
+          CFGScale: 1,
+          scheduler: "FlowMatchEulerDiscreteScheduler",
+        }
+      ]),
     });
 
     if (!response.ok) {
       const errorData = await response.text();
-      logStep("DeepAI API error", { status: response.status, error: errorData });
+      logStep("Runware API error", { status: response.status, error: errorData });
       return null;
     }
 
     const data = await response.json();
-    if (data.output_url) {
-      logStep("DeepAI thumbnail generated successfully", { url: data.output_url });
-      return data.output_url;
-    } else {
-      logStep("DeepAI response missing output_url", { data });
-      return null;
+    if (data.data && data.data.length > 0) {
+      const imageResult = data.data.find((item: any) => item.taskType === "imageInference");
+      if (imageResult && imageResult.imageURL) {
+        logStep("Runware thumbnail generated successfully", { url: imageResult.imageURL });
+        return imageResult.imageURL;
+      }
     }
+    
+    logStep("Runware response missing image data", { data });
+    return null;
   } catch (error) {
     logStep("Error generating thumbnail", { error: error.message });
     return null;
@@ -161,7 +176,7 @@ serve(async (req) => {
 
     logStep("Calling OpenAI API");
 
-    // Call OpenAI API with the updated prompt (removed thumbnailText)
+    // Call OpenAI API with the updated prompt
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -264,7 +279,7 @@ Return only valid JSON with the required fields.`
       });
     }
 
-    // Validate required fields (removed thumbnailText)
+    // Validate required fields
     const requiredFields = ['title', 'description', 'script', 'hashtags', 'thumbnailDesignIdea'];
     const missingFields = requiredFields.filter(field => !generatedContent[field]);
     
@@ -286,13 +301,13 @@ Return only valid JSON with the required fields.`
       hashtags = hashtags.join(' ');
     }
 
-    // Generate thumbnail image using DeepAI
+    // Generate thumbnail image using Runware
     logStep("Generating thumbnail image");
     const thumbnailUrl = await generateThumbnail(generatedContent.thumbnailDesignIdea);
 
     logStep("Content generated successfully");
 
-    // Save content pack to database (removed thumbnail_text field)
+    // Save content pack to database
     const { data: contentPack, error: saveError } = await supabaseClient
       .from('content_packs')
       .insert({
