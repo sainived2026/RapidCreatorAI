@@ -7,9 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, Crown, History, LogOut, Wand2 } from "lucide-react";
+import { Sparkles, Crown, History, LogOut, Wand2, Trash2, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import ExportOptions from "@/components/ExportOptions";
+import ViralScore from "@/components/ViralScore";
+import UpgradeModal from "@/components/UpgradeModal";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -255,6 +258,60 @@ const Dashboard = () => {
     }
   };
 
+  const deleteAllHistory = async () => {
+    if (!confirm("Are you sure you want to delete all your content history? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('content_packs')
+        .delete()
+        .eq('user_id', user?.id);
+      
+      if (error) throw error;
+      
+      setHistory([]);
+      toast({
+        title: "History cleared",
+        description: "All your content history has been deleted.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error deleting history",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const deleteOldContent = async () => {
+    try {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const { error } = await supabase
+        .from('content_packs')
+        .delete()
+        .eq('user_id', user?.id)
+        .lt('created_at', thirtyDaysAgo.toISOString());
+      
+      if (error) throw error;
+      
+      // Refresh history
+      fetchHistory();
+    } catch (error: any) {
+      console.error('Error deleting old content:', error);
+    }
+  };
+
+  // Auto-delete old content on load
+  useEffect(() => {
+    if (user) {
+      deleteOldContent();
+    }
+  }, [user]);
+
   if (!user || !profile) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
@@ -286,10 +343,12 @@ const Dashboard = () => {
               History
             </Button>
             {profile.plan !== 'pro' ? (
-              <Button variant="default" size="sm" onClick={handleUpgrade}>
-                <Crown className="h-4 w-4 mr-2" />
-                Upgrade to Pro
-              </Button>
+              <UpgradeModal onUpgrade={handleUpgrade}>
+                <Button variant="default" size="sm">
+                  <Crown className="h-4 w-4 mr-2" />
+                  Upgrade to Pro
+                </Button>
+              </UpgradeModal>
             ) : (
               <Button variant="outline" size="sm" onClick={handleManageSubscription}>
                 <Crown className="h-4 w-4 mr-2" />
@@ -417,73 +476,130 @@ const Dashboard = () => {
 
             {/* Generated Content */}
             {generatedContent && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Wand2 className="h-5 w-5" />
-                    Your Content Pack (Generated)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h3 className="font-semibold mb-2">📌 Title:</h3>
-                    <p className="text-foreground">{generatedContent.title}</p>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div>
-                    <h3 className="font-semibold mb-2">📝 Description:</h3>
-                    <p className="text-foreground">{generatedContent.description}</p>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div>
-                    <h3 className="font-semibold mb-2">🎙️ Script:</h3>
-                    <p className="text-foreground whitespace-pre-wrap">{generatedContent.script}</p>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div>
-                    <h3 className="font-semibold mb-2">🏷️ Hashtags:</h3>
-                    <p className="text-foreground">{generatedContent.hashtags}</p>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div>
-                    <h3 className="font-semibold mb-2">🖼️ Thumbnail Text:</h3>
-                    <p className="text-foreground">{generatedContent.thumbnailText}</p>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div>
-                    <h3 className="font-semibold mb-2">🖼️ Thumbnail Design Idea:</h3>
-                    <p className="text-foreground">{generatedContent.thumbnailDesignIdea}</p>
-                  </div>
-                  
-                  {profile.plan === 'pro' && (
-                    <div className="pt-4">
-                      <Button onClick={handleRegenerate} variant="outline" disabled={loading}>
-                        🔄 Regenerate
-                      </Button>
+              <>
+                <Card className="mb-4">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Wand2 className="h-5 w-5" />
+                      Your Content Pack (Generated)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold mb-2">📌 Title:</h3>
+                      <p className="text-foreground">{generatedContent.title}</p>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+                    
+                    <Separator />
+                    
+                    <div>
+                      <h3 className="font-semibold mb-2">📝 Description:</h3>
+                      <p className="text-foreground">{generatedContent.description}</p>
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div>
+                      <h3 className="font-semibold mb-2">🎙️ Script:</h3>
+                      <p className="text-foreground whitespace-pre-wrap">{generatedContent.script}</p>
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div>
+                      <h3 className="font-semibold mb-2">🏷️ Hashtags:</h3>
+                      <p className="text-foreground">{generatedContent.hashtags}</p>
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div>
+                      <h3 className="font-semibold mb-2">🖼️ Thumbnail Text:</h3>
+                      <p className="text-foreground">{generatedContent.thumbnailText}</p>
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div>
+                      <h3 className="font-semibold mb-2">🖼️ Thumbnail Design Idea:</h3>
+                      <p className="text-foreground">{generatedContent.thumbnailDesignIdea}</p>
+                    </div>
+                    
+                    {profile.plan === 'pro' && (
+                      <div className="pt-4">
+                        <Button onClick={handleRegenerate} variant="outline" disabled={loading}>
+                          🔄 Regenerate
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Better CTAs */}
+                <Card className="mb-4">
+                  <CardContent className="pt-6">
+                    <div className="text-center space-y-4">
+                      <h3 className="text-lg font-semibold">Ready to Go Viral? 🚀</h3>
+                      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                        <Button className="flex items-center gap-2" onClick={() => window.open('https://www.youtube.com/upload', '_blank')}>
+                          📹 Upload to YouTube
+                        </Button>
+                        <Button variant="outline" className="flex items-center gap-2" onClick={() => window.open('https://www.instagram.com/', '_blank')}>
+                          📊 Share on Instagram
+                        </Button>
+                        <Button variant="outline" className="flex items-center gap-2" onClick={() => window.open('https://www.tiktok.com/upload', '_blank')}>
+                          🎵 Post on TikTok
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Export Options */}
+                <ExportOptions 
+                  generatedContent={generatedContent}
+                  niche={niche}
+                  format={format}
+                  style={style}
+                />
+
+                {/* Viral Score */}
+                <ViralScore 
+                  generatedContent={generatedContent}
+                  niche={niche}
+                  style={style}
+                />
+              </>
             )}
           </div>
         ) : (
           <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold">Content History</h2>
-              <Button variant="outline" onClick={() => setShowHistory(false)}>
-                Back to Generator
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  variant="destructive" 
+                  size="sm" 
+                  onClick={deleteAllHistory}
+                  className="flex items-center gap-2"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Clear All
+                </Button>
+                <Button variant="outline" onClick={() => setShowHistory(false)}>
+                  Back to Generator
+                </Button>
+              </div>
             </div>
+
+            <Card className="mb-4 border-yellow-500">
+              <CardContent className="pt-6 flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                <span className="text-sm text-muted-foreground">
+                  Content automatically deletes after 30 days to keep your workspace clean.
+                </span>
+              </CardContent>
+            </Card>
             
             <div className="space-y-4">
               {history.map((item) => (
