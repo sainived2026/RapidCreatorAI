@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -63,7 +64,7 @@ const Index = () => {
           
           <div className="flex items-center justify-center text-sm text-muted-foreground">
             <CheckCircle className="h-4 w-4 text-success mr-2" />
-            Free forever • No credit card required • 2 packs daily
+            Free forever • No credit card required • 4 packs daily
           </div>
         </div>
       </section>
@@ -166,7 +167,7 @@ const Index = () => {
               <CardContent className="space-y-4">
                 <div className="flex items-center">
                   <CheckCircle className="h-5 w-5 text-success mr-3" />
-                  <span>2 content packs per day</span>
+                  <span>4 content packs per day</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="h-5 w-5 text-success mr-3" />
@@ -203,7 +204,7 @@ const Index = () => {
               <CardContent className="space-y-4">
                 <div className="flex items-center">
                   <CheckCircle className="h-5 w-5 text-success mr-3" />
-                  <span>5 content packs per day</span>
+                  <span>10 content packs per day</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="h-5 w-5 text-success mr-3" />
@@ -301,7 +302,7 @@ const Index = () => {
           
           <div className="flex items-center justify-center text-sm text-muted-foreground">
             <CheckCircle className="h-4 w-4 text-success mr-2" />
-            2 free content packs daily • Upgrade anytime • Cancel anytime
+            4 free content packs daily • Upgrade anytime • Cancel anytime
           </div>
         </div>
       </section>

@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -69,9 +70,9 @@ const generateThumbnail = async (thumbnailDesignIdea: string): Promise<string | 
         {
           taskType: "imageInference",
           taskUUID: crypto.randomUUID(),
-          positivePrompt: `Vertical thumbnail design: ${thumbnailDesignIdea}. High quality, eye-catching, professional vertical thumbnail with bold text and vivid colors, 9:16 aspect ratio, optimized for mobile viewing`,
-          width: 576, // 9 * 64 = 576 (valid multiple of 64)
-          height: 1024, // 16 * 64 = 1024 (valid multiple of 64)
+          positivePrompt: `Professional YouTube thumbnail design: ${thumbnailDesignIdea}. Ultra-high quality, eye-catching, clickable thumbnail with bold contrasting colors, dramatic lighting, clear readable text overlay, professional composition, vibrant colors, high contrast, optimized for mobile viewing, 16:9 aspect ratio, modern design aesthetic, attention-grabbing visual elements`,
+          width: 1024, // 16 * 64 = 1024 (valid multiple of 64)
+          height: 576, // 9 * 64 = 576 (valid multiple of 64)
           model: "runware:100@1",
           numberResults: 1,
           outputFormat: "WEBP",
@@ -213,9 +214,12 @@ Generate content with these specific requirements:
    - Include # symbol with each hashtag
 
 5. **Thumbnail Design Idea**:
-   - Describe a powerful, detailed visual layout for a YouTube thumbnail
-   - Include specific visual elements, colors, positioning, text placement
-   - Make it eye-catching and clickable for maximum engagement
+   - Create a comprehensive, professional thumbnail concept with specific visual elements
+   - Include: Main subject positioning, background style, color scheme, text overlay details
+   - Specify: Font styles, text placement, visual effects, facial expressions, lighting
+   - Focus on high-contrast, bold colors, and eye-catching composition
+   - Make it optimized for mobile viewing and maximum click-through rate
+   - Include specific details about: composition, lighting, color psychology, text hierarchy
 
 Return as JSON with these exact keys: title, description, script, hashtags, thumbnailDesignIdea
 
@@ -230,6 +234,14 @@ Style: ${style}
 Video Length: ${videoLength}
 
 Generate content that's fast-paced, emotional, relatable, and attention-grabbing. Focus on viral hooks and emotional engagement.
+
+For the thumbnail design idea, create a detailed, professional concept that includes:
+- Specific composition and layout
+- Color palette and contrast details
+- Text overlay positioning and styling
+- Visual elements and effects
+- Lighting and mood specifications
+- Elements that maximize click-through rate
 
 Return only valid JSON with the required fields.`
           }
