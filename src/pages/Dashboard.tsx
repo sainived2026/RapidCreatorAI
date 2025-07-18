@@ -200,14 +200,24 @@ const Dashboard = () => {
     }
 
     setLoading(true);
+    setGeneratedContent(null); // Clear previous content
+    
     try {
+      console.log("Starting content generation with:", { niche, format, style, videoLength });
+      
       const { data, error } = await supabase.functions.invoke('generate-content', {
         body: { niche, format, style, videoLength },
       });
 
-      if (error) throw error;
+      console.log("Function response:", { data, error });
 
-      if (data.error) {
+      if (error) {
+        console.error("Supabase function error:", error);
+        throw new Error(error.message || "Failed to generate content");
+      }
+
+      if (data?.error) {
+        console.error("Function returned error:", data);
         toast({
           title: "Generation failed",
           description: data.message || data.error,
@@ -216,6 +226,17 @@ const Dashboard = () => {
         return;
       }
 
+      if (!data || !data.title) {
+        console.error("Invalid response data:", data);
+        toast({
+          title: "Generation failed",
+          description: "Received invalid response. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log("Content generated successfully:", data);
       setGeneratedContent(data);
       fetchProfile(); // Refresh profile to update usage count
       
@@ -224,9 +245,10 @@ const Dashboard = () => {
         description: "Your viral content pack is ready.",
       });
     } catch (error: any) {
+      console.error("Error generating content:", error);
       toast({
         title: "Error generating content",
-        description: error.message,
+        description: error.message || "Something went wrong. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -518,22 +540,25 @@ const Dashboard = () => {
                       <h3 className="font-semibold mb-2">🖼️ Thumbnail Design:</h3>
                       {generatedContent.thumbnailUrl ? (
                         <div className="space-y-3">
-                          <img 
-                            src={generatedContent.thumbnailUrl} 
-                            alt="Generated Thumbnail" 
-                            className="max-w-md rounded-lg border"
-                          />
-                          <div className="bg-muted/50 p-3 rounded-lg">
-                            <h4 className="font-medium text-sm mb-1">Design Concept:</h4>
-                            <p className="text-sm text-muted-foreground">
+                          <div className="relative">
+                            <img 
+                              src={generatedContent.thumbnailUrl} 
+                              alt="Generated Thumbnail" 
+                              className="max-w-sm mx-auto rounded-lg border shadow-lg"
+                              style={{ aspectRatio: '9/16' }}
+                            />
+                          </div>
+                          <div className="bg-muted/50 p-4 rounded-lg">
+                            <h4 className="font-medium text-sm mb-2">Design Concept:</h4>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
                               {generatedContent.thumbnailDesignIdea}
                             </p>
                           </div>
                         </div>
                       ) : (
-                        <div className="bg-muted/50 p-3 rounded-lg">
-                          <h4 className="font-medium text-sm mb-1">Design Concept:</h4>
-                          <p className="text-sm text-muted-foreground">
+                        <div className="bg-muted/50 p-4 rounded-lg">
+                          <h4 className="font-medium text-sm mb-2">Design Concept:</h4>
+                          <p className="text-sm text-muted-foreground leading-relaxed">
                             {generatedContent.thumbnailDesignIdea}
                           </p>
                         </div>

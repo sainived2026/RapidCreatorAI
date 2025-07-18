@@ -70,9 +70,9 @@ const generateThumbnail = async (thumbnailDesignIdea: string): Promise<string | 
         {
           taskType: "imageInference",
           taskUUID: crypto.randomUUID(),
-          positivePrompt: `Professional YouTube thumbnail design: ${thumbnailDesignIdea}. Ultra-high quality, eye-catching, clickable thumbnail with bold contrasting colors, dramatic lighting, clear readable text overlay, professional composition, vibrant colors, high contrast, optimized for mobile viewing, 16:9 aspect ratio, modern design aesthetic, attention-grabbing visual elements`,
-          width: 1024, // 16 * 64 = 1024 (valid multiple of 64)
-          height: 576, // 9 * 64 = 576 (valid multiple of 64)
+          positivePrompt: `Professional YouTube thumbnail design: ${thumbnailDesignIdea}. Ultra-high quality, eye-catching, clickable thumbnail with bold contrasting colors, dramatic lighting, clear readable text overlay, professional composition, vibrant colors, high contrast, optimized for mobile viewing, 9:16 aspect ratio, modern design aesthetic, attention-grabbing visual elements`,
+          width: 576, // 9 * 64 = 576 (valid multiple of 64)
+          height: 1024, // 16 * 64 = 1024 (valid multiple of 64)
           model: "runware:100@1",
           numberResults: 1,
           outputFormat: "WEBP",
@@ -133,8 +133,21 @@ serve(async (req) => {
 
     logStep("User authenticated", { userId: user.id });
 
-    const { niche, format, style, videoLength } = await req.json();
+    const requestData = await req.json();
+    const { niche, format, style, videoLength } = requestData;
     logStep("Request data received", { niche, format, style, videoLength });
+
+    // Validate required fields
+    if (!niche || !format || !style) {
+      logStep("Missing required fields", { niche, format, style, videoLength });
+      return new Response(JSON.stringify({ 
+        error: 'Missing required fields',
+        message: 'Please provide niche, format, and style'
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Check user's daily limit
     const { data: profile, error: profileError } = await supabaseClient
@@ -254,7 +267,11 @@ Return only valid JSON with the required fields.`
     if (!openaiResponse.ok) {
       const errorData = await openaiResponse.json().catch(() => ({}));
       logStep("OpenAI API error", { status: openaiResponse.status, data: errorData });
-      return new Response(JSON.stringify({ error: 'OpenAI API error', details: errorData }), {
+      return new Response(JSON.stringify({ 
+        error: 'OpenAI API error', 
+        message: 'Failed to generate content. Please try again.',
+        details: errorData 
+      }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -265,7 +282,10 @@ Return only valid JSON with the required fields.`
 
     if (!openaiData.choices || !openaiData.choices[0] || !openaiData.choices[0].message) {
       logStep("Invalid OpenAI response structure", { data: openaiData });
-      return new Response(JSON.stringify({ error: 'Invalid response from OpenAI' }), {
+      return new Response(JSON.stringify({ 
+        error: 'Invalid response from OpenAI',
+        message: 'Failed to generate content. Please try again.'
+      }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -282,8 +302,8 @@ Return only valid JSON with the required fields.`
       logStep("JSON parse error", { content: responseContent, error: parseError.message });
       return new Response(JSON.stringify({ 
         error: 'Failed to parse AI response',
-        details: parseError.message,
-        rawContent: responseContent
+        message: 'Content generation failed. Please try again.',
+        details: parseError.message
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -298,8 +318,8 @@ Return only valid JSON with the required fields.`
       logStep("Missing required fields", { missingFields, generatedContent });
       return new Response(JSON.stringify({ 
         error: 'Generated content missing required fields',
-        missingFields,
-        generatedContent
+        message: 'Content generation incomplete. Please try again.',
+        missingFields
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -338,7 +358,11 @@ Return only valid JSON with the required fields.`
 
     if (saveError) {
       logStep("Content pack save error", { error: saveError });
-      return new Response(JSON.stringify({ error: 'Failed to save content pack', details: saveError }), {
+      return new Response(JSON.stringify({ 
+        error: 'Failed to save content pack', 
+        message: 'Content generated but failed to save. Please try again.',
+        details: saveError 
+      }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -365,7 +389,7 @@ Return only valid JSON with the required fields.`
       script: generatedContent.script,
       hashtags: hashtags,
       thumbnailDesignIdea: generatedContent.thumbnailDesignIdea,
-      thumbnailUrl: thumbnailUrl, // Include the generated thumbnail URL
+      thumbnailUrl: thumbnailUrl,
       id: contentPack?.id,
       remainingGenerations: profile.daily_generations_limit - profile.daily_generations_used - 1
     }), {
@@ -376,7 +400,8 @@ Return only valid JSON with the required fields.`
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep('ERROR in generate-content function', { message: errorMessage, stack: error.stack });
     return new Response(JSON.stringify({ 
-      error: errorMessage,
+      error: 'Internal server error',
+      message: 'Something went wrong. Please try again.',
       type: 'function_error'
     }), {
       status: 500,
