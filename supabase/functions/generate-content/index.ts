@@ -1,5 +1,4 @@
 
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -58,17 +57,17 @@ const generateThumbnail = async (thumbnailDesignIdea: string): Promise<string | 
 
     logStep("Generating thumbnail with DeepAI", { prompt: thumbnailDesignIdea });
 
+    const formData = new FormData();
+    formData.append('text', `YouTube thumbnail design: ${thumbnailDesignIdea}. High quality, eye-catching, professional thumbnail with bold text and vivid colors.`);
+    formData.append('width', '1280');
+    formData.append('height', '720');
+
     const response = await fetch('https://api.deepai.org/api/text2img', {
       method: 'POST',
       headers: {
         'Api-Key': deepaiApiKey,
-        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        text: `YouTube thumbnail design: ${thumbnailDesignIdea}. High quality, eye-catching, professional thumbnail with bold text and vivid colors.`,
-        width: 1280,
-        height: 720,
-      }),
+      body: formData,
     });
 
     if (!response.ok) {
@@ -78,8 +77,13 @@ const generateThumbnail = async (thumbnailDesignIdea: string): Promise<string | 
     }
 
     const data = await response.json();
-    logStep("DeepAI thumbnail generated successfully", { url: data.output_url });
-    return data.output_url;
+    if (data.output_url) {
+      logStep("DeepAI thumbnail generated successfully", { url: data.output_url });
+      return data.output_url;
+    } else {
+      logStep("DeepAI response missing output_url", { data });
+      return null;
+    }
   } catch (error) {
     logStep("Error generating thumbnail", { error: error.message });
     return null;
@@ -354,4 +358,3 @@ Return only valid JSON with the required fields.`
     });
   }
 });
-

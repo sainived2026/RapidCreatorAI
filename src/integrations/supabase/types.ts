@@ -25,7 +25,6 @@ export type Database = {
           script: string
           style: string
           thumbnail_design_idea: string
-          thumbnail_text: string
           title: string
           user_id: string
           video_length: string
@@ -40,7 +39,6 @@ export type Database = {
           script: string
           style: string
           thumbnail_design_idea: string
-          thumbnail_text: string
           title: string
           user_id: string
           video_length: string
@@ -55,7 +53,6 @@ export type Database = {
           script?: string
           style?: string
           thumbnail_design_idea?: string
-          thumbnail_text?: string
           title?: string
           user_id?: string
           video_length?: string
