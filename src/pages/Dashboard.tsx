@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,7 +23,9 @@ const Dashboard = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
   const [checkingSubscription, setCheckingSubscription] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -57,6 +59,31 @@ const Dashboard = () => {
     getSession();
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  // Check for payment status in URL parameters
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const payment = searchParams.get('payment');
+    
+    if (payment === 'success') {
+      setPaymentStatus('success');
+      // Check subscription status after successful payment
+      setTimeout(() => {
+        checkSubscription();
+      }, 2000);
+      toast({
+        title: "Payment Successful!",
+        description: "Your subscription is being updated...",
+      });
+    } else if (payment === 'cancelled') {
+      setPaymentStatus('cancelled');
+      toast({
+        title: "Payment Cancelled",
+        description: "Your payment was cancelled. You can try again anytime.",
+        variant: "destructive",
+      });
+    }
+  }, [location.search, toast]);
 
   const fetchProfile = async (userId?: string) => {
     try {
@@ -96,6 +123,16 @@ const Dashboard = () => {
   };
 
   const handleUpgrade = async () => {
+    // Check if user is logged in
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      // Store the current path to redirect back after login
+      sessionStorage.setItem('redirectAfterLogin', '/app?upgrade=true');
+      navigate("/login");
+      return;
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout');
       
@@ -268,6 +305,23 @@ const Dashboard = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8">
+        {/* Payment Status Messages */}
+        {paymentStatus === 'cancelled' && (
+          <Card className="mb-6 border-destructive">
+            <CardContent className="pt-6">
+              <p className="text-destructive font-medium">Payment not confirmed. Please try upgrading again or contact support if you believe this is an error.</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {paymentStatus === 'success' && profile?.plan !== 'pro' && (
+          <Card className="mb-6 border-yellow-500">
+            <CardContent className="pt-6">
+              <p className="text-yellow-600 font-medium">Payment confirmed! Your account is being upgraded to Pro. This may take a few moments to update.</p>
+            </CardContent>
+          </Card>
+        )}
+
         {!showHistory ? (
           <div className="max-w-4xl mx-auto">
             {/* Welcome Section */}

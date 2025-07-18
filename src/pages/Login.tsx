@@ -22,7 +22,14 @@ const Login = () => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/app");
+        // Check if there's a redirect path stored
+        const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+        if (redirectPath) {
+          sessionStorage.removeItem('redirectAfterLogin');
+          navigate(redirectPath);
+        } else {
+          navigate("/app");
+        }
       }
     };
     checkSession();
@@ -55,7 +62,14 @@ const Login = () => {
         description: "You've been successfully logged in.",
       });
 
-      navigate("/app");
+      // Check if there's a redirect path stored
+      const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+      if (redirectPath) {
+        sessionStorage.removeItem('redirectAfterLogin');
+        navigate(redirectPath);
+      } else {
+        navigate("/app");
+      }
     } catch (error: any) {
       toast({
         title: "Error signing in",
@@ -119,10 +133,14 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
+      // Store redirect path before OAuth
+      const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+      const finalRedirectPath = redirectPath || `${window.location.origin}/app`;
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/app`,
+          redirectTo: finalRedirectPath,
         },
       });
 
