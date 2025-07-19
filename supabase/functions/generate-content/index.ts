@@ -46,8 +46,8 @@ const parseOpenAIResponse = (content: string) => {
   }
 };
 
-// Helper function to generate thumbnail using Runware
-const generateThumbnail = async (thumbnailDesignIdea: string): Promise<string | null> => {
+// Helper function to generate thumbnail using Runware with enhanced quality
+const generateThumbnail = async (thumbnailDesignIdea: string, niche: string, format: string): Promise<string | null> => {
   try {
     const runwareApiKey = Deno.env.get('RUNWARE_API_KEY');
     if (!runwareApiKey) {
@@ -55,7 +55,35 @@ const generateThumbnail = async (thumbnailDesignIdea: string): Promise<string | 
       return null;
     }
 
-    logStep("Generating thumbnail with Runware", { prompt: thumbnailDesignIdea });
+    // Enhanced prompt for better thumbnail generation
+    const enhancedPrompt = `PROFESSIONAL YOUTUBE THUMBNAIL: ${thumbnailDesignIdea}. 
+    
+    STYLE REQUIREMENTS:
+    - Ultra-high quality, photorealistic rendering
+    - Bold, contrasting colors (bright yellows, electric blues, vibrant reds)
+    - Dramatic lighting with strong shadows and highlights
+    - Sharp focus with cinematic depth of field
+    - Professional studio lighting setup
+    - Eye-catching composition optimized for mobile viewing
+    
+    TEXT OVERLAY:
+    - Large, bold, readable typography
+    - High contrast text with drop shadows or outlines
+    - Positioned for maximum readability on mobile devices
+    
+    VISUAL ELEMENTS:
+    - Professional photography quality
+    - Engaging facial expressions (if people are included)
+    - Dynamic poses and composition
+    - Rich, saturated colors that pop on screen
+    - Clean, uncluttered background
+    
+    NICHE-SPECIFIC: ${niche} content style
+    PLATFORM: ${format} optimization
+    
+    TECHNICAL: 4K resolution, professional grade, commercial quality, trending thumbnail style 2024`;
+
+    logStep("Generating enhanced thumbnail with Runware", { prompt: enhancedPrompt.substring(0, 200) + "..." });
 
     const response = await fetch('https://api.runware.ai/v1', {
       method: 'POST',
@@ -70,14 +98,17 @@ const generateThumbnail = async (thumbnailDesignIdea: string): Promise<string | 
         {
           taskType: "imageInference",
           taskUUID: crypto.randomUUID(),
-          positivePrompt: `Professional YouTube thumbnail design: ${thumbnailDesignIdea}. Ultra-high quality, eye-catching, clickable thumbnail with bold contrasting colors, dramatic lighting, clear readable text overlay, professional composition, vibrant colors, high contrast, optimized for mobile viewing, 9:16 aspect ratio, modern design aesthetic, attention-grabbing visual elements`,
-          width: 576, // 9 * 64 = 576 (valid multiple of 64)
-          height: 1024, // 16 * 64 = 1024 (valid multiple of 64)
+          positivePrompt: enhancedPrompt,
+          negativePrompt: "blurry, low quality, pixelated, amateur, poor lighting, dull colors, text too small, cluttered, unprofessional, watermark, logo, copyright, low resolution, grainy, out of focus, bad composition, ugly, distorted",
+          width: 576,
+          height: 1024,
           model: "runware:100@1",
           numberResults: 1,
           outputFormat: "WEBP",
-          CFGScale: 1,
+          CFGScale: 7.5, // Higher for better prompt following
           scheduler: "FlowMatchEulerDiscreteScheduler",
+          steps: 8, // More steps for better quality
+          seed: Math.floor(Math.random() * 1000000), // Random seed for variety
         }
       ]),
     });
@@ -92,7 +123,7 @@ const generateThumbnail = async (thumbnailDesignIdea: string): Promise<string | 
     if (data.data && data.data.length > 0) {
       const imageResult = data.data.find((item: any) => item.taskType === "imageInference");
       if (imageResult && imageResult.imageURL) {
-        logStep("Runware thumbnail generated successfully", { url: imageResult.imageURL });
+        logStep("Enhanced Runware thumbnail generated successfully", { url: imageResult.imageURL });
         return imageResult.imageURL;
       }
     }
@@ -189,7 +220,7 @@ serve(async (req) => {
 
     logStep("Calling OpenAI API");
 
-    // Call OpenAI API with the updated prompt
+    // Enhanced OpenAI prompt for better thumbnail descriptions
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -226,15 +257,17 @@ Generate content with these specific requirements:
    - Mix trending & niche hashtags
    - Include # symbol with each hashtag
 
-5. **Thumbnail Design Idea** (as a single descriptive string):
-   - Create a comprehensive, professional thumbnail concept
-   - Include specific visual elements, composition, colors, text overlay
-   - Focus on high-contrast, bold colors, eye-catching composition
-   - Optimized for mobile viewing and maximum click-through rate
+5. **Thumbnail Design Idea** (Professional YouTube thumbnail concept):
+   - Create a DETAILED, professional thumbnail concept for maximum click-through rate
+   - Focus on VISUAL IMPACT: bright contrasting colors, dramatic lighting, engaging composition
+   - Include specific details about: main subject, background, text overlay, color scheme, lighting style
+   - Optimize for mobile viewing with bold, readable elements
+   - Make it CLICKABLE and eye-catching with professional quality
+   - Example: "Split-screen design showing [specific scene] on left in dark, moody lighting, and [contrasting scene] on right in bright, vibrant colors. Large bold text '[SPECIFIC TEXT]' in yellow with black outline, positioned center-top. Professional studio lighting, high contrast, photorealistic quality."
 
 Return as JSON with these exact keys: title, description, script, hashtags, thumbnailDesignIdea
 
-The thumbnailDesignIdea should be a single detailed string describing the thumbnail concept.`
+The thumbnailDesignIdea should be extremely detailed and specific for generating high-quality, professional thumbnails.`
           },
           {
             role: 'user',
@@ -246,7 +279,12 @@ Video Length: ${videoLength}
 
 Generate content that's fast-paced, emotional, relatable, and attention-grabbing. Focus on viral hooks and emotional engagement.
 
-For the thumbnailDesignIdea, provide a single comprehensive string that describes the thumbnail concept in detail including composition, colors, text overlay, and visual elements.
+For the thumbnailDesignIdea, provide an EXTREMELY DETAILED description that includes:
+- Specific visual composition and layout
+- Exact color schemes and lighting requirements
+- Text positioning and styling details
+- Professional photography elements
+- Platform-specific optimization for ${format}
 
 Return only valid JSON with the required fields.`
           }
@@ -333,9 +371,9 @@ Return only valid JSON with the required fields.`
         .join(', ');
     }
 
-    // Generate thumbnail image using Runware
-    logStep("Generating thumbnail image");
-    const thumbnailUrl = await generateThumbnail(thumbnailDesignIdea);
+    // Generate enhanced thumbnail image using Runware
+    logStep("Generating enhanced thumbnail image");
+    const thumbnailUrl = await generateThumbnail(thumbnailDesignIdea, niche, format);
 
     logStep("Content generated successfully");
 
