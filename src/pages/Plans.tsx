@@ -167,22 +167,22 @@ const Plans = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
       <header className="border-b border-border/50 bg-background/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-            <Sparkles className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               RapidCreator.ai
             </span>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {user && (
-              <Button variant="outline" onClick={() => navigate("/dashboard")}>
+              <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")} className="text-sm">
                 Back to Dashboard
               </Button>
             )}
             {!user && (
-              <Button variant="outline" onClick={() => navigate("/login")}>
+              <Button variant="outline" size="sm" onClick={() => navigate("/login")} className="text-sm">
                 Sign In
               </Button>
             )}
@@ -190,50 +190,50 @@ const Plans = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+      <div className="container mx-auto px-4 py-8 sm:py-16">
+        <div className="text-center mb-8 sm:mb-16">
+          <h1 className="text-2xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent px-4">
             Choose Your Plan
           </h1>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8 px-4">
             Select the perfect plan for your content creation needs
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
           {plans.map((plan) => (
-            <Card key={plan.name} className={`relative ${plan.popular ? 'border-primary shadow-lg' : ''}`}>
+            <Card key={plan.name} className={`relative h-full ${plan.popular ? 'border-primary shadow-lg' : ''}`}>
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-primary text-primary-foreground">
+                  <Badge className="bg-primary text-primary-foreground px-3 py-1">
                     <Crown className="h-3 w-3 mr-1" />
                     Most Popular
                   </Badge>
                 </div>
               )}
               
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl">{plan.name}</CardTitle>
+              <CardHeader className="text-center pb-6">
+                <CardTitle className="text-xl sm:text-2xl">{plan.name}</CardTitle>
                 <div className="flex items-baseline justify-center gap-2">
-                  <span className="text-4xl font-bold text-primary">{plan.price}</span>
-                  <span className="text-muted-foreground">/{plan.period}</span>
+                  <span className="text-3xl sm:text-4xl font-bold text-primary">{plan.price}</span>
+                  <span className="text-muted-foreground text-sm sm:text-base">/{plan.period}</span>
                 </div>
-                <CardDescription>{plan.description}</CardDescription>
+                <CardDescription className="text-sm sm:text-base">{plan.description}</CardDescription>
               </CardHeader>
               
-              <CardContent className="space-y-6">
-                <div className="space-y-3">
+              <CardContent className="space-y-4 sm:space-y-6 flex-1 flex flex-col">
+                <div className="space-y-3 flex-1">
                   {plan.features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm">{feature}</span>
+                    <div key={index} className="flex items-start gap-3">
+                      <Check className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm sm:text-base">{feature}</span>
                     </div>
                   ))}
                   
                   {plan.limitations.map((limitation, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <X className="h-5 w-5 text-red-500 flex-shrink-0" />
-                      <span className="text-sm text-muted-foreground">{limitation}</span>
+                    <div key={index} className="flex items-start gap-3">
+                      <X className="h-4 w-4 sm:h-5 sm:w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm sm:text-base text-muted-foreground">{limitation}</span>
                     </div>
                   ))}
                 </div>
@@ -241,7 +241,7 @@ const Plans = () => {
                 <Button 
                   onClick={plan.action}
                   disabled={loading || plan.current}
-                  className="w-full"
+                  className="w-full min-h-[44px] text-sm sm:text-base mt-auto"
                   variant={plan.variant}
                 >
                   {plan.current ? "Current Plan" : `Choose ${plan.name}`}
@@ -251,8 +251,8 @@ const Plans = () => {
           ))}
         </div>
 
-        <div className="text-center mt-16">
-          <p className="text-muted-foreground">
+        <div className="text-center mt-8 sm:mt-16">
+          <p className="text-muted-foreground text-sm sm:text-base px-4">
             Need help choosing? Contact us at{" "}
             <a href="mailto:sainived2026@gmail.com" className="text-primary hover:underline">
               sainived2026@gmail.com

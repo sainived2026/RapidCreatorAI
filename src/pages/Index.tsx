@@ -13,22 +13,26 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground">
       {/* Navigation */}
       <nav className="border-b border-border bg-background/80 backdrop-blur-md fixed w-full z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Sparkles className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            <span className="text-lg sm:text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               RapidCreator.ai
             </span>
           </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" onClick={() => navigate("/login")}>Login</Button>
-            <Button variant="hero" onClick={() => navigate("/plans")}>Start Free Trial</Button>
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/login")} className="text-sm">
+              Login
+            </Button>
+            <Button variant="hero" size="sm" onClick={() => navigate("/plans")} className="text-sm px-3 sm:px-4">
+              Start Free
+            </Button>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-24 pb-16 px-4 relative overflow-hidden">
+      <section className="pt-20 sm:pt-24 pb-12 sm:pb-16 px-4 relative overflow-hidden">
         <div 
           className="absolute inset-0 opacity-10"
           style={{
@@ -37,12 +41,12 @@ const Index = () => {
             backgroundPosition: 'center'
           }}
         />
-        <div className="container mx-auto text-center relative z-10">
-          <Badge className="mb-6 bg-primary/20 text-primary border-primary/30">
+        <div className="container mx-auto text-center relative z-10 max-w-4xl">
+          <Badge className="mb-4 sm:mb-6 bg-primary/20 text-primary border-primary/30 text-xs sm:text-sm">
             🚀 Generate viral content in seconds
           </Badge>
           
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight px-2">
             Generate viral{" "}
             <span className="bg-gradient-hero bg-clip-text text-transparent">
               video content packs
@@ -50,41 +54,46 @@ const Index = () => {
             in seconds — with AI
           </h1>
           
-          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+          <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-3xl mx-auto px-4">
             The AI-powered tool designed for content creators to instantly generate 
             viral short-form video content for YouTube Shorts, Instagram Reels, and TikToks.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <Button variant="hero" size="lg" className="text-lg px-8 py-6" onClick={() => navigate("/login")}>
-              <Play className="mr-2 h-5 w-5" />
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-8 sm:mb-12 px-4">
+            <Button 
+              variant="hero" 
+              size="lg" 
+              className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 min-h-[48px]" 
+              onClick={() => navigate("/login")}
+            >
+              <Play className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               Start Creating for Free — No Card Needed
             </Button>
           </div>
           
-          <div className="flex items-center justify-center text-sm text-muted-foreground">
-            <CheckCircle className="h-4 w-4 text-success mr-2" />
+          <div className="flex items-center justify-center text-xs sm:text-sm text-muted-foreground px-4">
+            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-success mr-2 flex-shrink-0" />
             Free forever • No credit card required • 4 packs daily
           </div>
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 px-4">
+      <section className="py-12 sm:py-20 px-4">
         <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-4xl font-bold mb-4 px-4">
               From Idea to Viral Content in{" "}
               <span className="bg-gradient-primary bg-clip-text text-transparent">
                 4 Simple Steps
               </span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
               Our AI works like ChatGPT, but specifically designed for short-form video content creation
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {[
               {
                 step: "1",
@@ -111,16 +120,16 @@ const Index = () => {
                 icon: TrendingUp
               }
             ].map((item, index) => (
-              <Card key={index} className="bg-card border-border hover:shadow-card transition-all duration-300">
+              <Card key={index} className="bg-card border-border hover:shadow-card transition-all duration-300 h-full">
                 <CardHeader className="text-center pb-3">
-                  <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-lg font-bold text-background">{item.step}</span>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                    <span className="text-base sm:text-lg font-bold text-background">{item.step}</span>
                   </div>
-                  <item.icon className="h-8 w-8 text-primary mx-auto mb-2" />
-                  <CardTitle className="text-xl">{item.title}</CardTitle>
+                  <item.icon className="h-6 w-6 sm:h-8 sm:w-8 text-primary mx-auto mb-2" />
+                  <CardTitle className="text-lg sm:text-xl">{item.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-center">{item.description}</CardDescription>
+                  <CardDescription className="text-center text-sm sm:text-base">{item.description}</CardDescription>
                 </CardContent>
               </Card>
             ))}
@@ -129,96 +138,109 @@ const Index = () => {
       </section>
 
       {/* CTA Banner */}
-      <section className="py-16 px-4 bg-gradient-subtle">
+      <section className="py-12 sm:py-16 px-4 bg-gradient-subtle">
         <div className="container mx-auto text-center">
-          <h3 className="text-3xl font-bold mb-4">
+          <h3 className="text-xl sm:text-3xl font-bold mb-4 px-4">
             Don't skip content today — get your script in 1 click!
           </h3>
-          <Button variant="accent" size="lg" className="text-lg px-8 py-6" onClick={() => navigate("/login")}>
+          <Button 
+            variant="accent" 
+            size="lg" 
+            className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 min-h-[48px]" 
+            onClick={() => navigate("/login")}
+          >
             Generate Now
-            <ArrowRight className="ml-2 h-5 w-5" />
+            <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
         </div>
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20 px-4">
+      <section className="py-12 sm:py-20 px-4">
         <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-4xl font-bold mb-4 px-4">
               Simple Pricing for{" "}
               <span className="bg-gradient-primary bg-clip-text text-transparent">
                 Every Creator
               </span>
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-base sm:text-xl text-muted-foreground px-4">
               Start free, upgrade when you need more power
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
             {/* Free Plan */}
-            <Card className="bg-card border-border">
-              <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl mb-2">Free Plan</CardTitle>
-                <div className="text-4xl font-bold mb-2">$0</div>
-                <CardDescription>Perfect for trying out the platform</CardDescription>
+            <Card className="bg-card border-border h-full">
+              <CardHeader className="text-center pb-6 sm:pb-8">
+                <CardTitle className="text-xl sm:text-2xl mb-2">Free Plan</CardTitle>
+                <div className="text-3xl sm:text-4xl font-bold mb-2">$0</div>
+                <CardDescription className="text-sm sm:text-base">Perfect for trying out the platform</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 sm:space-y-4">
                 <div className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-success mr-3" />
-                  <span>4 content packs per day</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success mr-3 flex-shrink-0" />
+                  <span className="text-sm sm:text-base">4 content packs per day</span>
                 </div>
                 <div className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-success mr-3" />
-                  <span>All content formats (YouTube, TikTok, Reels)</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success mr-3 flex-shrink-0" />
+                  <span className="text-sm sm:text-base">All content formats (YouTube, TikTok, Reels)</span>
                 </div>
                 <div className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-success mr-3" />
-                  <span>Basic thumbnail ideas</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success mr-3 flex-shrink-0" />
+                  <span className="text-sm sm:text-base">Basic thumbnail ideas</span>
                 </div>
                 <div className="flex items-center opacity-50">
-                  <span className="w-5 h-5 mr-3">✗</span>
-                  <span>No regenerate button</span>
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 mr-3 flex-shrink-0 text-sm sm:text-base">✗</span>
+                  <span className="text-sm sm:text-base">No regenerate button</span>
                 </div>
-                <Button variant="outline" className="w-full mt-6" onClick={() => navigate("/login")}>
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-4 sm:mt-6 min-h-[44px] text-sm sm:text-base" 
+                  onClick={() => navigate("/login")}
+                >
                   Get Started Free
                 </Button>
               </CardContent>
             </Card>
 
             {/* Pro Plan */}
-            <Card className="bg-gradient-primary/10 border-primary relative">
+            <Card className="bg-gradient-primary/10 border-primary relative h-full">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-gradient-primary text-background px-4 py-1">
+                <Badge className="bg-gradient-primary text-background px-3 sm:px-4 py-1 text-xs sm:text-sm">
                   Most Popular
                 </Badge>
               </div>
-              <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl mb-2">Pro Plan</CardTitle>
-                <div className="text-4xl font-bold mb-2">
-                  $6<span className="text-lg text-muted-foreground">/month</span>
+              <CardHeader className="text-center pb-6 sm:pb-8">
+                <CardTitle className="text-xl sm:text-2xl mb-2">Pro Plan</CardTitle>
+                <div className="text-3xl sm:text-4xl font-bold mb-2">
+                  $6<span className="text-base sm:text-lg text-muted-foreground">/month</span>
                 </div>
-                <CardDescription>For serious content creators</CardDescription>
+                <CardDescription className="text-sm sm:text-base">For serious content creators</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 sm:space-y-4">
                 <div className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-success mr-3" />
-                  <span>10 content packs per day</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success mr-3 flex-shrink-0" />
+                  <span className="text-sm sm:text-base">10 content packs per day</span>
                 </div>
                 <div className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-success mr-3" />
-                  <span>Regenerate option for perfect content</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success mr-3 flex-shrink-0" />
+                  <span className="text-sm sm:text-base">Regenerate option for perfect content</span>
                 </div>
                 <div className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-success mr-3" />
-                  <span>HD thumbnail design ideas</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success mr-3 flex-shrink-0" />
+                  <span className="text-sm sm:text-base">HD thumbnail design ideas</span>
                 </div>
                 <div className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-success mr-3" />
-                  <span>Priority support</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success mr-3 flex-shrink-0" />
+                  <span className="text-sm sm:text-base">Priority support</span>
                 </div>
-                <Button variant="hero" className="w-full mt-6" onClick={() => navigate("/plans")}>
+                <Button 
+                  variant="hero" 
+                  className="w-full mt-4 sm:mt-6 min-h-[44px] text-sm sm:text-base" 
+                  onClick={() => navigate("/plans")}
+                >
                   Upgrade to Pro
                 </Button>
               </CardContent>
@@ -228,21 +250,21 @@ const Index = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 px-4 bg-gradient-subtle">
+      <section className="py-12 sm:py-20 px-4 bg-gradient-subtle">
         <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-4xl font-bold mb-4 px-4">
               Loved by{" "}
               <span className="bg-gradient-primary bg-clip-text text-transparent">
                 Content Creators
               </span>
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-base sm:text-xl text-muted-foreground px-4">
               See what creators are saying about RapidCreator.ai
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
               {
                 name: "Alex Chen",
@@ -263,17 +285,17 @@ const Index = () => {
                 rating: 5
               }
             ].map((testimonial, index) => (
-              <Card key={index} className="bg-card border-border">
-                <CardContent className="pt-6">
-                  <div className="flex mb-4">
+              <Card key={index} className="bg-card border-border h-full">
+                <CardContent className="pt-4 sm:pt-6">
+                  <div className="flex mb-3 sm:mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-warning fill-current" />
+                      <Star key={i} className="h-4 w-4 sm:h-5 sm:w-5 text-warning fill-current" />
                     ))}
                   </div>
-                  <p className="text-muted-foreground mb-4">"{testimonial.content}"</p>
+                  <p className="text-muted-foreground mb-3 sm:mb-4 text-sm sm:text-base">"{testimonial.content}"</p>
                   <div>
-                    <div className="font-semibold">{testimonial.name}</div>
-                    <div className="text-sm text-muted-foreground">{testimonial.role}</div>
+                    <div className="font-semibold text-sm sm:text-base">{testimonial.name}</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground">{testimonial.role}</div>
                   </div>
                 </CardContent>
               </Card>
@@ -283,49 +305,54 @@ const Index = () => {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-20 px-4">
+      <section className="py-12 sm:py-20 px-4">
         <div className="container mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 px-4">
             Ready to Create{" "}
             <span className="bg-gradient-hero bg-clip-text text-transparent">
               Viral Content?
             </span>
           </h2>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
             Join thousands of content creators who are already using AI to generate viral video content packs in seconds.
           </p>
           
-          <Button variant="hero" size="lg" className="text-xl px-12 py-8 mb-4" onClick={() => navigate("/login")}>
-            <Sparkles className="mr-3 h-6 w-6" />
+          <Button 
+            variant="hero" 
+            size="lg" 
+            className="text-base sm:text-xl px-8 sm:px-12 py-6 sm:py-8 mb-4 min-h-[48px] w-full sm:w-auto" 
+            onClick={() => navigate("/login")}
+          >
+            <Sparkles className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6" />
             Start Creating for Free — No Card Needed
           </Button>
           
-          <div className="flex items-center justify-center text-sm text-muted-foreground">
-            <CheckCircle className="h-4 w-4 text-success mr-2" />
+          <div className="flex items-center justify-center text-xs sm:text-sm text-muted-foreground px-4">
+            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-success mr-2 flex-shrink-0" />
             4 free content packs daily • Upgrade anytime • Cancel anytime
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-12 px-4">
+      <footer className="border-t border-border py-8 sm:py-12 px-4">
         <div className="container mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Sparkles className="h-6 w-6 text-primary" />
-                <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+            <div className="col-span-2 md:col-span-1">
+              <div className="flex items-center space-x-2 mb-3 sm:mb-4">
+                <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                <span className="text-lg sm:text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
                   RapidCreator.ai
                 </span>
               </div>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm sm:text-base">
                 Generate viral video content packs in seconds with AI.
               </p>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-muted-foreground">
+              <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Product</h4>
+              <ul className="space-y-2 text-muted-foreground text-sm sm:text-base">
                 <li><a href="#" className="hover:text-foreground transition-colors">Features</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Pricing</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Demo</a></li>
@@ -333,8 +360,8 @@ const Index = () => {
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-muted-foreground">
+              <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Support</h4>
+              <ul className="space-y-2 text-muted-foreground text-sm sm:text-base">
                 <li><a href="#" className="hover:text-foreground transition-colors">Help Center</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Contact</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Status</a></li>
@@ -342,8 +369,8 @@ const Index = () => {
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-muted-foreground">
+              <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Company</h4>
+              <ul className="space-y-2 text-muted-foreground text-sm sm:text-base">
                 <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Privacy</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Terms</a></li>
@@ -351,7 +378,7 @@ const Index = () => {
             </div>
           </div>
           
-          <div className="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
+          <div className="border-t border-border mt-6 sm:mt-8 pt-6 sm:pt-8 text-center text-muted-foreground text-xs sm:text-sm">
             <p>&copy; 2024 RapidCreator.ai. All rights reserved.</p>
           </div>
         </div>

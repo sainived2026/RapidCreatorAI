@@ -160,29 +160,31 @@ const Login = () => {
       <div className="absolute inset-0 bg-grid-pattern opacity-5" />
       
       <Card className="w-full max-w-md border-border/50 shadow-2xl relative z-10">
-        <CardHeader className="text-center">
-          <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <Sparkles className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+        <CardHeader className="text-center space-y-4">
+          <Link to="/" className="inline-flex items-center gap-2">
+            <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               RapidCreator.ai
             </span>
           </Link>
-          <CardTitle className="text-2xl">Welcome</CardTitle>
-          <CardDescription>
-            Sign in to your account or create a new one
-          </CardDescription>
+          <div>
+            <CardTitle className="text-xl sm:text-2xl">Welcome</CardTitle>
+            <CardDescription className="text-sm sm:text-base mt-2">
+              Sign in to your account or create a new one
+            </CardDescription>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 h-10">
+              <TabsTrigger value="signin" className="text-sm">Sign In</TabsTrigger>
+              <TabsTrigger value="signup" className="text-sm">Sign Up</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="signin" className="space-y-4 mt-4">
+            <TabsContent value="signin" className="space-y-4 mt-6">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signin-email">Email</Label>
+                  <Label htmlFor="signin-email" className="text-sm">Email</Label>
                   <Input
                     id="signin-email"
                     type="email"
@@ -192,10 +194,11 @@ const Login = () => {
                     required
                     disabled={loading}
                     autoComplete="email"
+                    className="min-h-[44px] text-base"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signin-password">Password</Label>
+                  <Label htmlFor="signin-password" className="text-sm">Password</Label>
                   <Input
                     id="signin-password"
                     type="password"
@@ -205,18 +208,23 @@ const Login = () => {
                     required
                     disabled={loading}
                     autoComplete="current-password"
+                    className="min-h-[44px] text-base"
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button 
+                  type="submit" 
+                  className="w-full min-h-[44px] text-base" 
+                  disabled={loading}
+                >
                   {loading ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
             </TabsContent>
             
-            <TabsContent value="signup" className="space-y-4 mt-4">
+            <TabsContent value="signup" className="space-y-4 mt-6">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
+                  <Label htmlFor="signup-email" className="text-sm">Email</Label>
                   <Input
                     id="signup-email"
                     type="email"
@@ -226,10 +234,11 @@ const Login = () => {
                     required
                     disabled={loading}
                     autoComplete="email"
+                    className="min-h-[44px] text-base"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
+                  <Label htmlFor="signup-password" className="text-sm">Password</Label>
                   <Input
                     id="signup-password"
                     type="password"
@@ -240,16 +249,21 @@ const Login = () => {
                     disabled={loading}
                     autoComplete="new-password"
                     minLength={6}
+                    className="min-h-[44px] text-base"
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button 
+                  type="submit" 
+                  className="w-full min-h-[44px] text-base" 
+                  disabled={loading}
+                >
                   {loading ? "Creating account..." : "Sign Up"}
                 </Button>
               </form>
             </TabsContent>
           </Tabs>
           
-          <div className="mt-4">
+          <div className="space-y-4">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
@@ -263,7 +277,7 @@ const Login = () => {
             <Button
               variant="outline"
               onClick={handleGoogleSignIn}
-              className="w-full mt-4 flex items-center gap-2"
+              className="w-full flex items-center gap-2 min-h-[44px] text-base"
               disabled={loading}
             >
               <svg
@@ -288,7 +302,7 @@ const Login = () => {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              Continue with Google
+              <span className="truncate">Continue with Google</span>
             </Button>
           </div>
         </CardContent>

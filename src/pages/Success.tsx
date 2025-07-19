@@ -71,7 +71,7 @@ const Success = () => {
     switch (paymentStatus) {
       case 'success':
         return {
-          icon: <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />,
+          icon: <CheckCircle className="h-12 w-12 sm:h-16 sm:w-16 text-green-500 mx-auto mb-4" />,
           title: "Payment Successful!",
           description: "You're now Pro! Enjoy 10 daily generations and regenerations.",
           buttonText: "Go to Dashboard",
@@ -79,7 +79,7 @@ const Success = () => {
         };
       case 'cancelled':
         return {
-          icon: <XCircle className="h-16 w-16 text-yellow-500 mx-auto mb-4" />,
+          icon: <XCircle className="h-12 w-12 sm:h-16 sm:w-16 text-yellow-500 mx-auto mb-4" />,
           title: "Payment Cancelled",
           description: "Your payment was cancelled. No charges were made.",
           buttonText: "Try Again",
@@ -87,7 +87,7 @@ const Success = () => {
         };
       case 'failed':
         return {
-          icon: <XCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />,
+          icon: <XCircle className="h-12 w-12 sm:h-16 sm:w-16 text-red-500 mx-auto mb-4" />,
           title: "Payment Failed",
           description: "Sorry, payment did not complete successfully. Please try again.",
           buttonText: "Try Again",
@@ -98,10 +98,10 @@ const Success = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center">
-          <Sparkles className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Processing your payment...</p>
+          <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground text-sm sm:text-base">Processing your payment...</p>
         </div>
       </div>
     );
@@ -112,15 +112,17 @@ const Success = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md text-center">
-        <CardHeader>
+        <CardHeader className="space-y-4">
           {content.icon}
-          <CardTitle className="text-2xl">{content.title}</CardTitle>
-          <CardDescription>{content.description}</CardDescription>
+          <div>
+            <CardTitle className="text-xl sm:text-2xl">{content.title}</CardTitle>
+            <CardDescription className="text-sm sm:text-base mt-2">{content.description}</CardDescription>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 sm:space-y-4">
           <Button 
             onClick={content.buttonAction}
-            className="w-full"
+            className="w-full min-h-[44px] text-sm sm:text-base"
             variant={paymentStatus === 'success' ? 'hero' : 'outline'}
           >
             {content.buttonText}
@@ -129,7 +131,7 @@ const Success = () => {
           <Button 
             variant="ghost" 
             onClick={() => navigate('/')}
-            className="w-full"
+            className="w-full min-h-[44px] text-sm sm:text-base"
           >
             Back to Home
           </Button>
