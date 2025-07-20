@@ -170,18 +170,20 @@ Create content that:
 - Uses platform-specific best practices
 - Incorporates trending elements when relevant
 
-Please provide ONLY a valid JSON response with these exact keys:
-- title (max 60 characters)
-- description (max 200 characters) 
-- script (optimized for ${videoLength} videos with proper pacing, hooks, transitions, and call-to-action)
-- hashtags (array of 15-25 hashtags, mix of popular and niche-specific)
-- thumbnailDesignIdea (description that would work well for ${format})
+IMPORTANT: You must respond with ONLY valid JSON. Do not include any explanatory text, markdown formatting, or code blocks. Return only the raw JSON object.
 
-Do not wrap the JSON in markdown code blocks or add any other text.`
+Required JSON format:
+{
+  "title": "max 60 characters",
+  "description": "max 200 characters",
+  "script": "optimized for ${videoLength} with proper pacing",
+  "hashtags": ["array", "of", "15-25", "hashtags"],
+  "thumbnailDesignIdea": "description for ${format}"
+}`
           },
           {
             role: 'user',
-            content: `Create viral ${format} content about ${niche} in ${style} style for ${videoLength}. Make sure the script is perfectly timed for ${videoLength} and includes all necessary elements: hook, main content, and call-to-action. Return only valid JSON.`
+            content: `Create viral ${format} content about ${niche} in ${style} style for ${videoLength}. Script must be perfectly timed for ${videoLength}. Respond with only JSON, no other text.`
           }
         ],
         temperature: 0.8,
@@ -201,24 +203,47 @@ Do not wrap the JSON in markdown code blocks or add any other text.`
     let contentData;
     try {
       let responseText = openaiData.choices[0].message.content;
+      console.log("Raw OpenAI response:", responseText);
       
-      // Clean up the response if it's wrapped in markdown code blocks
-      if (responseText.includes('```json')) {
-        responseText = responseText.replace(/```json\s*/g, '').replace(/```\s*$/g, '');
-      }
-      if (responseText.includes('```')) {
-        responseText = responseText.replace(/```\s*/g, '');
-      }
-      
-      // Trim whitespace
+      // More comprehensive cleaning of markdown and formatting
       responseText = responseText.trim();
+      
+      // Remove markdown code blocks
+      responseText = responseText.replace(/```json\s*/gi, '');
+      responseText = responseText.replace(/```\s*/g, '');
+      
+      // Remove any leading/trailing non-JSON text
+      const jsonStart = responseText.indexOf('{');
+      const jsonEnd = responseText.lastIndexOf('}');
+      
+      if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+        responseText = responseText.substring(jsonStart, jsonEnd + 1);
+      }
       
       console.log("Cleaned response text:", responseText);
       contentData = JSON.parse(responseText);
+      
+      // Validate required fields
+      if (!contentData.title || !contentData.description || !contentData.script || !contentData.hashtags || !contentData.thumbnailDesignIdea) {
+        throw new Error('Missing required fields in AI response');
+      }
+      
     } catch (parseError) {
       console.error('Failed to parse OpenAI response as JSON:', parseError);
       console.error('Raw response:', openaiData.choices[0].message.content);
-      throw new Error('Invalid response format from AI');
+      
+      // Return a more detailed error response
+      return new Response(
+        JSON.stringify({
+          error: 'Invalid AI response format',
+          message: 'The AI returned an invalid response. Please try again.',
+          details: parseError.message
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     // Generate thumbnail using Runware API
