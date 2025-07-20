@@ -254,7 +254,11 @@ const Dashboard = () => {
           <div className="space-y-6">
             {generatedContent && (
               <>
-                <ViralScore content={generatedContent} />
+                <ViralScore 
+                  generatedContent={generatedContent}
+                  niche={formData.niche}
+                  style={formData.style}
+                />
                 
                 <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
                   <CardHeader className="pb-4">
@@ -319,7 +323,12 @@ const Dashboard = () => {
                       </TabsContent>
                       
                       <TabsContent value="export">
-                        <ExportOptions content={generatedContent} />
+                        <ExportOptions 
+                          generatedContent={generatedContent}
+                          niche={formData.niche}
+                          format={formData.format}
+                          style={formData.style}
+                        />
                       </TabsContent>
                     </Tabs>
                   </CardContent>
