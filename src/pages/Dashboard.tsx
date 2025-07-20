@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,9 +12,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Video, ImageIcon, Sparkles, LogOut } from "lucide-react";
-import { UpgradeModal } from "@/components/UpgradeModal";
-import { ExportOptions } from "@/components/ExportOptions";
-import { ViralScore } from "@/components/ViralScore";
+import UpgradeModal from "@/components/UpgradeModal";
+import ExportOptions from "@/components/ExportOptions";
+import ViralScore from "@/components/ViralScore";
 import { GenerationLimitDisplay } from "@/components/GenerationLimitDisplay";
 import { useUserProfile } from "@/hooks/useUserProfile";
 
