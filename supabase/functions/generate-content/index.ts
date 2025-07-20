@@ -246,38 +246,66 @@ Required JSON format:
       );
     }
 
-    // Generate thumbnail using Runware API
+    // Generate thumbnail using Runware API with proper authentication
     let thumbnailUrl = null;
     try {
-      const runwareResponse = await fetch('https://api.runware.ai/v1', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${Deno.env.get('RUNWARE_API_KEY')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify([{
-          taskType: "imageInference",
-          taskUUID: crypto.randomUUID(),
-          prompt: `${contentData.thumbnailDesignIdea} for ${niche} ${format} content, vibrant, eye-catching, high quality, 9:16 aspect ratio, ${style} style`,
-          width: 512,
-          height: 910,
-          model: "runware:100@1",
-          steps: 4,
-          CFGScale: 1,
-        }]),
-      });
-
-      if (runwareResponse.ok) {
-        const runwareData = await runwareResponse.json();
-        if (runwareData.data && runwareData.data[0] && runwareData.data[0].imageURL) {
-          thumbnailUrl = runwareData.data[0].imageURL;
-          console.log("Thumbnail generated successfully");
-        }
+      console.log("Starting thumbnail generation...");
+      
+      const runwareApiKey = Deno.env.get('RUNWARE_API_KEY');
+      if (!runwareApiKey) {
+        console.warn('RUNWARE_API_KEY not found, skipping thumbnail generation');
       } else {
-        console.warn('Thumbnail generation failed, continuing without image');
+        const runwareResponse = await fetch('https://api.runware.ai/v1', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${runwareApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify([
+            {
+              taskType: "authentication",
+              apiKey: runwareApiKey
+            },
+            {
+              taskType: "imageInference",
+              taskUUID: crypto.randomUUID(),
+              positivePrompt: `${contentData.thumbnailDesignIdea} for ${niche} ${format} content, vibrant, eye-catching, high quality, 9:16 aspect ratio, ${style} style`,
+              width: 512,
+              height: 910,
+              model: "runware:100@1",
+              steps: 4,
+              CFGScale: 1,
+              numberResults: 1,
+              outputFormat: "WEBP"
+            }
+          ]),
+        });
+
+        console.log("Runware API response status:", runwareResponse.status);
+        
+        if (runwareResponse.ok) {
+          const runwareData = await runwareResponse.json();
+          console.log("Runware API response:", runwareData);
+          
+          if (runwareData.data) {
+            // Find the image inference result
+            const imageResult = runwareData.data.find(item => item.taskType === "imageInference");
+            if (imageResult && imageResult.imageURL) {
+              thumbnailUrl = imageResult.imageURL;
+              console.log("Thumbnail generated successfully:", thumbnailUrl);
+            } else {
+              console.warn('No image URL in Runware response');
+            }
+          } else {
+            console.warn('No data in Runware response');
+          }
+        } else {
+          const errorText = await runwareResponse.text();
+          console.error('Runware API error:', errorText);
+        }
       }
     } catch (thumbnailError) {
-      console.warn('Thumbnail generation error:', thumbnailError);
+      console.error('Thumbnail generation error:', thumbnailError);
     }
 
     // Convert hashtags array to string for database storage
