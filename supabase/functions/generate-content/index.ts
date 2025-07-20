@@ -170,23 +170,18 @@ Create content that:
 - Uses platform-specific best practices
 - Incorporates trending elements when relevant
 
-Please provide:
-1. A catchy title (max 60 characters)
-2. A compelling description (max 200 characters) 
-3. A detailed script optimized for ${videoLength} videos with proper pacing, hooks, transitions, and call-to-action
-4. Relevant hashtags (mix of popular and niche-specific, 15-25 hashtags)
-5. A thumbnail design concept description that would work well for ${format}
+Please provide ONLY a valid JSON response with these exact keys:
+- title (max 60 characters)
+- description (max 200 characters) 
+- script (optimized for ${videoLength} videos with proper pacing, hooks, transitions, and call-to-action)
+- hashtags (array of 15-25 hashtags, mix of popular and niche-specific)
+- thumbnailDesignIdea (description that would work well for ${format})
 
-Format your response as JSON with these exact keys:
-- title
-- description  
-- script
-- hashtags
-- thumbnailDesignIdea`
+Do not wrap the JSON in markdown code blocks or add any other text.`
           },
           {
             role: 'user',
-            content: `Create viral ${format} content about ${niche} in ${style} style for ${videoLength}. Make sure the script is perfectly timed for ${videoLength} and includes all necessary elements: hook, main content, and call-to-action.`
+            content: `Create viral ${format} content about ${niche} in ${style} style for ${videoLength}. Make sure the script is perfectly timed for ${videoLength} and includes all necessary elements: hook, main content, and call-to-action. Return only valid JSON.`
           }
         ],
         temperature: 0.8,
@@ -205,9 +200,24 @@ Format your response as JSON with these exact keys:
 
     let contentData;
     try {
-      contentData = JSON.parse(openaiData.choices[0].message.content);
+      let responseText = openaiData.choices[0].message.content;
+      
+      // Clean up the response if it's wrapped in markdown code blocks
+      if (responseText.includes('```json')) {
+        responseText = responseText.replace(/```json\s*/g, '').replace(/```\s*$/g, '');
+      }
+      if (responseText.includes('```')) {
+        responseText = responseText.replace(/```\s*/g, '');
+      }
+      
+      // Trim whitespace
+      responseText = responseText.trim();
+      
+      console.log("Cleaned response text:", responseText);
+      contentData = JSON.parse(responseText);
     } catch (parseError) {
       console.error('Failed to parse OpenAI response as JSON:', parseError);
+      console.error('Raw response:', openaiData.choices[0].message.content);
       throw new Error('Invalid response format from AI');
     }
 
@@ -245,6 +255,11 @@ Format your response as JSON with these exact keys:
       console.warn('Thumbnail generation error:', thumbnailError);
     }
 
+    // Convert hashtags array to string for database storage
+    const hashtagsString = Array.isArray(contentData.hashtags) 
+      ? contentData.hashtags.join(' ') 
+      : contentData.hashtags;
+
     // Save content pack to database
     const { data: contentPack, error: saveError } = await supabaseClient
       .from('content_packs')
@@ -257,7 +272,7 @@ Format your response as JSON with these exact keys:
         title: contentData.title,
         description: contentData.description,
         script: contentData.script,
-        hashtags: contentData.hashtags,
+        hashtags: hashtagsString,
         thumbnail_design_idea: contentData.thumbnailDesignIdea,
       })
       .select()
