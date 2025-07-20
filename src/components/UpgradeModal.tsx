@@ -5,11 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Crown, Zap, Video, Image, History, Sparkles } from "lucide-react";
 
 interface UpgradeModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  onUpgrade: () => void;
+  children: React.ReactNode;
 }
 
-const UpgradeModal = ({ isOpen, onClose }: UpgradeModalProps) => {
+const UpgradeModal = ({ onUpgrade, children }: UpgradeModalProps) => {
   const proFeatures = [
     {
       icon: <Zap className="h-3 w-3 sm:h-4 sm:w-4" />,
@@ -43,14 +43,11 @@ const UpgradeModal = ({ isOpen, onClose }: UpgradeModalProps) => {
     }
   ];
 
-  const handleUpgrade = () => {
-    // Add upgrade logic here
-    console.log('Upgrade clicked');
-    onClose();
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog>
+      <DialogTrigger asChild>
+        {children}
+      </DialogTrigger>
       <DialogContent className="max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto mx-4">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -93,7 +90,7 @@ const UpgradeModal = ({ isOpen, onClose }: UpgradeModalProps) => {
           </div>
 
           <Button 
-            onClick={handleUpgrade} 
+            onClick={onUpgrade} 
             className="w-full min-h-[44px] text-sm" 
             size="sm"
           >
