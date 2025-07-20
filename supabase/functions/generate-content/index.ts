@@ -170,7 +170,7 @@ Create content that:
 - Uses platform-specific best practices
 - Incorporates trending elements when relevant
 
-IMPORTANT: You must respond with ONLY valid JSON. Do not include any explanatory text, markdown formatting, or code blocks. Return only the raw JSON object.
+CRITICAL: You MUST respond with ONLY a valid JSON object. No explanations, no markdown, no code blocks, no additional text. Just pure JSON.
 
 Required JSON format:
 {
@@ -183,7 +183,7 @@ Required JSON format:
           },
           {
             role: 'user',
-            content: `Create viral ${format} content about ${niche} in ${style} style for ${videoLength}. Script must be perfectly timed for ${videoLength}. Respond with only JSON, no other text.`
+            content: `Create viral ${format} content about ${niche} in ${style} style for ${videoLength}. Script must be perfectly timed for ${videoLength}. Return ONLY JSON, absolutely no other text or formatting.`
           }
         ],
         temperature: 0.8,
@@ -246,7 +246,7 @@ Required JSON format:
       );
     }
 
-    // Generate thumbnail using Runware API with proper authentication
+    // Generate thumbnail using Runware API with correct dimensions
     let thumbnailUrl = null;
     try {
       console.log("Starting thumbnail generation...");
@@ -271,7 +271,7 @@ Required JSON format:
               taskUUID: crypto.randomUUID(),
               positivePrompt: `${contentData.thumbnailDesignIdea} for ${niche} ${format} content, vibrant, eye-catching, high quality, 9:16 aspect ratio, ${style} style`,
               width: 512,
-              height: 910,
+              height: 896, // Changed to 896 (multiple of 64) for 9:16 aspect ratio
               model: "runware:100@1",
               steps: 4,
               CFGScale: 1,
