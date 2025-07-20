@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useDailyLimitReset } from "@/hooks/useDailyLimitReset";
 import { Sparkles, Crown, History, LogOut, Wand2, Trash2, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -30,6 +31,9 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+
+  // Use the daily limit reset hook
+  const { checkAndResetDailyLimit } = useDailyLimitReset(user?.id);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -91,6 +95,11 @@ const Dashboard = () => {
   const fetchProfile = async (userId?: string) => {
     try {
       const userIdToUse = userId || user?.id || (await supabase.auth.getUser()).data.user?.id;
+      
+      // Check and reset daily limit first
+      if (userIdToUse) {
+        await checkAndResetDailyLimit();
+      }
       
       const { data, error } = await supabase
         .from('profiles')
@@ -334,6 +343,16 @@ const Dashboard = () => {
     }
   }, [user]);
 
+  // Calculate hours until next reset
+  const getHoursUntilReset = () => {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+    tomorrow.setUTCHours(0, 0, 0, 0);
+    const diff = tomorrow.getTime() - now.getTime();
+    return Math.ceil(diff / (1000 * 60 * 60));
+  };
+
   if (!user || !profile) {
     return <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
@@ -436,8 +455,15 @@ const Dashboard = () => {
               <p className="text-muted-foreground mb-3 sm:mb-4 text-sm sm:text-base px-2">
                 Create engaging short-form video content in seconds
               </p>
-              <div className="text-xs sm:text-sm text-muted-foreground">
-                You have used {profile.daily_generations_used} of {profile.daily_generations_limit} generations today
+              <div className="text-xs sm:text-sm text-muted-foreground space-y-1">
+                <div>
+                  You have used {profile.daily_generations_used} of {profile.daily_generations_limit} generations today
+                </div>
+                {profile.daily_generations_used >= profile.daily_generations_limit && (
+                  <div className="text-yellow-600">
+                    Limit resets in {getHoursUntilReset()} hours (midnight UTC)
+                  </div>
+                )}
               </div>
             </div>
 
@@ -502,7 +528,7 @@ const Dashboard = () => {
                 
                 <Button 
                   onClick={handleGenerateContent} 
-                  disabled={loading || !niche || !format || !style}
+                  disabled={loading || !niche || !format || !style || profile.daily_generations_used >= profile.daily_generations_limit}
                   className="w-full h-12 sm:h-auto text-base font-medium"
                 >
                   {loading ? (
@@ -510,6 +536,8 @@ const Dashboard = () => {
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-background mr-2"></div>
                       Generating...
                     </>
+                  ) : profile.daily_generations_used >= profile.daily_generations_limit ? (
+                    'Daily Limit Reached'
                   ) : (
                     <>
                       <Wand2 className="h-4 w-4 mr-2" />

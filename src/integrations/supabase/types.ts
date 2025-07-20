@@ -133,7 +133,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_and_reset_user_daily_usage: {
+        Args: { user_uuid: string }
+        Returns: boolean
+      }
+      manual_reset_all_users: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       reset_daily_usage: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      reset_daily_usage_for_all_users: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
