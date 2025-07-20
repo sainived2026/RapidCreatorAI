@@ -83,7 +83,7 @@ serve(async (req) => {
     // Get request body
     const { niche, format, style, videoLength } = await req.json();
 
-    if (!niche || !format || !style) {
+    if (!niche || !format || !style || !videoLength) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields' }),
         {
@@ -94,6 +94,53 @@ serve(async (req) => {
     }
 
     console.log("Generating content for:", { niche, format, style, videoLength });
+
+    // Create dynamic prompts based on style and format
+    const getStylePrompt = (style: string) => {
+      const stylePrompts = {
+        'Hook-based': 'Start with a powerful hook that grabs attention in the first 3 seconds. Use curiosity gaps and compelling questions.',
+        'Storytelling': 'Create a narrative structure with beginning, middle, and end. Include emotional elements and relatable characters.',
+        'Educational': 'Focus on teaching valuable information. Break down complex topics into digestible steps.',
+        'Entertainment': 'Prioritize fun, humor, and engagement. Keep the tone light and entertaining.',
+        'Behind-the-scenes': 'Show the process, reveal secrets, and give insider access to how things work.',
+        'Tutorial/How-to': 'Provide step-by-step instructions that viewers can follow along with.',
+        'Q&A': 'Address common questions and provide clear, helpful answers.',
+        'List-based': 'Structure content as a numbered or bulleted list of tips, facts, or items.',
+        'Trending/News': 'Connect to current events, trending topics, or viral moments.',
+        'Inspirational': 'Motivate and uplift viewers with positive messages and success stories.',
+        'Comparison': 'Compare different options, products, or approaches to help viewers decide.',
+        'Review': 'Provide honest opinions and evaluations of products, services, or experiences.',
+        'Challenge': 'Present challenges, experiments, or tests that create engagement.',
+        'Reaction': 'React to trending content, news, or viral videos with authentic responses.',
+        'Stats/Facts': 'Present interesting statistics, data, and surprising facts.'
+      };
+      return stylePrompts[style] || 'Create engaging content that captures attention.';
+    };
+
+    const getFormatPrompt = (format: string) => {
+      const formatPrompts = {
+        'YouTube Short': 'Optimize for YouTube Shorts with vertical format, quick pacing, and strong visual elements.',
+        'Instagram Reel': 'Create Instagram-friendly content with trending audio opportunities and hashtag optimization.',
+        'TikTok': 'Follow TikTok trends, use popular sounds, and create content that encourages interaction.',
+        'Facebook Reel': 'Design for Facebook\'s audience with clear messaging and community engagement focus.',
+        'Snapchat Spotlight': 'Create authentic, raw content that feels native to Snapchat\'s platform.',
+        'Pinterest Idea Pin': 'Focus on inspiration, tutorials, and visually appealing step-by-step content.',
+        'LinkedIn Video': 'Professional tone with business value, industry insights, and career-focused content.',
+        'Twitter/X Video': 'Concise, punchy content that sparks conversation and encourages retweets.',
+        'Carousel Post': 'Structure content across multiple slides with clear progression and visual consistency.',
+        'Story Format': 'Create ephemeral content with interactive elements and behind-the-scenes feel.'
+      };
+      return formatPrompts[format] || 'Create platform-optimized content.';
+    };
+
+    const getScriptLength = (videoLength: string) => {
+      const lengthGuides = {
+        '15-30 seconds': 'Keep script concise with 30-50 words. Focus on one key message with strong hook and quick payoff.',
+        '30-45 seconds': 'Write 50-80 words. Allow for brief setup, main content, and clear call-to-action.',
+        'Under 60 seconds': 'Use 80-120 words. Include hook, main content with 2-3 key points, and strong conclusion.'
+      };
+      return lengthGuides[videoLength] || 'Keep script appropriate for video length.';
+    };
 
     // Generate content using OpenAI
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -107,29 +154,43 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are a viral content creator expert. Generate engaging ${format} content for the ${niche} niche in a ${style} style. The content should be optimized for ${videoLength} videos.
+            content: `You are a viral content creator expert specializing in ${format} content for the ${niche} niche. 
 
-            Please provide:
-            1. A catchy title (max 60 characters)
-            2. A compelling description (max 200 characters) 
-            3. A detailed script with hooks, main content, and call-to-action
-            4. Relevant hashtags (mix of popular and niche-specific)
-            5. A thumbnail design concept description
+STYLE GUIDANCE: ${getStylePrompt(style)}
 
-            Format your response as JSON with these exact keys:
-            - title
-            - description  
-            - script
-            - hashtags
-            - thumbnailDesignIdea`
+FORMAT GUIDANCE: ${getFormatPrompt(format)}
+
+SCRIPT LENGTH: ${getScriptLength(videoLength)} The video length is ${videoLength}.
+
+Create content that:
+- Hooks viewers in the first 3 seconds
+- Maintains engagement throughout
+- Includes clear value proposition
+- Ends with strong call-to-action
+- Uses platform-specific best practices
+- Incorporates trending elements when relevant
+
+Please provide:
+1. A catchy title (max 60 characters)
+2. A compelling description (max 200 characters) 
+3. A detailed script optimized for ${videoLength} videos with proper pacing, hooks, transitions, and call-to-action
+4. Relevant hashtags (mix of popular and niche-specific, 15-25 hashtags)
+5. A thumbnail design concept description that would work well for ${format}
+
+Format your response as JSON with these exact keys:
+- title
+- description  
+- script
+- hashtags
+- thumbnailDesignIdea`
           },
           {
             role: 'user',
-            content: `Create viral ${format} content about ${niche} in ${style} style for ${videoLength}.`
+            content: `Create viral ${format} content about ${niche} in ${style} style for ${videoLength}. Make sure the script is perfectly timed for ${videoLength} and includes all necessary elements: hook, main content, and call-to-action.`
           }
         ],
         temperature: 0.8,
-        max_tokens: 1500,
+        max_tokens: 2000,
       }),
     });
 
@@ -162,7 +223,7 @@ serve(async (req) => {
         body: JSON.stringify([{
           taskType: "imageInference",
           taskUUID: crypto.randomUUID(),
-          prompt: `${contentData.thumbnailDesignIdea} for ${niche} content, vibrant, eye-catching, high quality, 9:16 aspect ratio`,
+          prompt: `${contentData.thumbnailDesignIdea} for ${niche} ${format} content, vibrant, eye-catching, high quality, 9:16 aspect ratio, ${style} style`,
           width: 512,
           height: 910,
           model: "runware:100@1",

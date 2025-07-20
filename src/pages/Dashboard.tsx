@@ -21,7 +21,7 @@ const Dashboard = () => {
   const [niche, setNiche] = useState("");
   const [format, setFormat] = useState("");
   const [style, setStyle] = useState("");
-  const [videoLength] = useState("Under 60 seconds");
+  const [videoLength, setVideoLength] = useState("");
   const [loading, setLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<any>(null);
   const [showHistory, setShowHistory] = useState(false);
@@ -199,7 +199,7 @@ const Dashboard = () => {
   };
 
   const handleGenerateContent = async () => {
-    if (!niche || !format || !style) {
+    if (!niche || !format || !style || !videoLength) {
       toast({
         title: "Missing information",
         description: "Please fill in all fields before generating content.",
@@ -380,7 +380,6 @@ const Dashboard = () => {
               )}
             </Badge>
             
-            {/* Mobile: Show only essential buttons */}
             <div className="hidden sm:flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={handleViewHistory}>
                 <History className="h-4 w-4 mr-2" />
@@ -401,7 +400,6 @@ const Dashboard = () => {
               )}
             </div>
             
-            {/* Mobile: Compact buttons */}
             <div className="flex sm:hidden items-center gap-1">
               <Button variant="ghost" size="sm" onClick={handleViewHistory}>
                 <History className="h-4 w-4" />
@@ -428,7 +426,6 @@ const Dashboard = () => {
       </header>
 
       <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
-        {/* Payment Status Messages - Mobile Optimized */}
         {paymentStatus === 'cancelled' && (
           <Card className="mb-4 sm:mb-6 border-destructive">
             <CardContent className="pt-4 sm:pt-6">
@@ -447,7 +444,6 @@ const Dashboard = () => {
 
         {!showHistory ? (
           <div className="max-w-4xl mx-auto">
-            {/* Welcome Section - Mobile Optimized */}
             <div className="text-center mb-6 sm:mb-8">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent leading-tight">
                 Generate Viral Content
@@ -467,7 +463,6 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Input Form - Mobile Optimized */}
             <Card className="mb-6 sm:mb-8">
               <CardHeader className="pb-4 sm:pb-6">
                 <CardTitle className="text-lg sm:text-xl">Content Generation Settings</CardTitle>
@@ -496,7 +491,13 @@ const Dashboard = () => {
                         <SelectItem value="YouTube Short">YouTube Short</SelectItem>
                         <SelectItem value="Instagram Reel">Instagram Reel</SelectItem>
                         <SelectItem value="TikTok">TikTok</SelectItem>
-                        <SelectItem value="Carousel">Carousel</SelectItem>
+                        <SelectItem value="Facebook Reel">Facebook Reel</SelectItem>
+                        <SelectItem value="Snapchat Spotlight">Snapchat Spotlight</SelectItem>
+                        <SelectItem value="Pinterest Idea Pin">Pinterest Idea Pin</SelectItem>
+                        <SelectItem value="LinkedIn Video">LinkedIn Video</SelectItem>
+                        <SelectItem value="Twitter/X Video">Twitter/X Video</SelectItem>
+                        <SelectItem value="Carousel Post">Carousel Post</SelectItem>
+                        <SelectItem value="Story Format">Story Format</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -510,25 +511,41 @@ const Dashboard = () => {
                       <SelectContent>
                         <SelectItem value="Hook-based">Hook-based</SelectItem>
                         <SelectItem value="Storytelling">Storytelling</SelectItem>
-                        <SelectItem value="Stats">Stats</SelectItem>
+                        <SelectItem value="Educational">Educational</SelectItem>
+                        <SelectItem value="Entertainment">Entertainment</SelectItem>
+                        <SelectItem value="Behind-the-scenes">Behind-the-scenes</SelectItem>
+                        <SelectItem value="Tutorial/How-to">Tutorial/How-to</SelectItem>
+                        <SelectItem value="Q&A">Q&A</SelectItem>
+                        <SelectItem value="List-based">List-based</SelectItem>
+                        <SelectItem value="Trending/News">Trending/News</SelectItem>
+                        <SelectItem value="Inspirational">Inspirational</SelectItem>
+                        <SelectItem value="Comparison">Comparison</SelectItem>
+                        <SelectItem value="Review">Review</SelectItem>
+                        <SelectItem value="Challenge">Challenge</SelectItem>
+                        <SelectItem value="Reaction">Reaction</SelectItem>
+                        <SelectItem value="Stats/Facts">Stats/Facts</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   
                   <div className="space-y-2">
                     <Label htmlFor="videoLength" className="text-sm sm:text-base">Video Length</Label>
-                    <Input
-                      id="videoLength"
-                      value={videoLength}
-                      disabled
-                      className="bg-muted h-10 sm:h-auto text-base"
-                    />
+                    <Select value={videoLength} onValueChange={setVideoLength}>
+                      <SelectTrigger className="h-10 sm:h-auto text-base">
+                        <SelectValue placeholder="Select video length" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="15-30 seconds">15-30 seconds</SelectItem>
+                        <SelectItem value="30-45 seconds">30-45 seconds</SelectItem>
+                        <SelectItem value="Under 60 seconds">Under 60 seconds</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
                 
                 <Button 
                   onClick={handleGenerateContent} 
-                  disabled={loading || !niche || !format || !style || profile.daily_generations_used >= profile.daily_generations_limit}
+                  disabled={loading || !niche || !format || !style || !videoLength || profile.daily_generations_used >= profile.daily_generations_limit}
                   className="w-full h-12 sm:h-auto text-base font-medium"
                 >
                   {loading ? (
@@ -548,7 +565,6 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Generated Content - Mobile Optimized */}
             {generatedContent && (
               <>
                 <Card className="mb-4">
@@ -587,7 +603,6 @@ const Dashboard = () => {
                     
                     <Separator />
                     
-                    {/* Enhanced thumbnail section - Mobile Optimized */}
                     <div>
                       <h3 className="font-semibold mb-2 text-sm sm:text-base">🖼️ Thumbnail Design:</h3>
                       {generatedContent.thumbnailUrl ? (
@@ -627,7 +642,6 @@ const Dashboard = () => {
                   </CardContent>
                 </Card>
 
-                {/* Export Options - Mobile Optimized */}
                 <ExportOptions 
                   generatedContent={generatedContent}
                   niche={niche}
@@ -635,7 +649,6 @@ const Dashboard = () => {
                   style={style}
                 />
 
-                {/* Viral Score - Mobile Optimized */}
                 <ViralScore 
                   generatedContent={generatedContent}
                   niche={niche}
@@ -679,7 +692,7 @@ const Dashboard = () => {
                   <CardHeader className="pb-3 sm:pb-4">
                     <CardTitle className="text-base sm:text-lg leading-tight">{item.title}</CardTitle>
                     <CardDescription className="text-xs sm:text-sm">
-                      {item.niche} • {item.format} • {item.style} • {new Date(item.created_at).toLocaleDateString()}
+                      {item.niche} • {item.format} • {item.style} • {item.video_length} • {new Date(item.created_at).toLocaleDateString()}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
