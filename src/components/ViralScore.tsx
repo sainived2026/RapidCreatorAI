@@ -9,7 +9,7 @@ interface ViralScoreProps {
     title: string;
     description: string;
     script: string;
-    hashtags: string;
+    hashtags: string | string[];
     thumbnailDesignIdea: string;
   };
   niche: string;
@@ -52,10 +52,20 @@ const ViralScore = ({ generatedContent, niche, style }: ViralScoreProps) => {
       if (generatedContent.script.toLowerCase().includes(word)) scriptScore += 5;
     });
 
-    // Hashtag scoring (max 20 points)
-    const hashtagCount = (generatedContent.hashtags.match(/#/g) || []).length;
+    // Hashtag scoring (max 20 points) - Handle both string and array formats
+    let hashtagCount = 0;
+    let hashtagString = '';
+    
+    if (Array.isArray(generatedContent.hashtags)) {
+      hashtagCount = generatedContent.hashtags.length;
+      hashtagString = generatedContent.hashtags.join(' ').toLowerCase();
+    } else {
+      hashtagCount = (generatedContent.hashtags.match(/#/g) || []).length;
+      hashtagString = generatedContent.hashtags.toLowerCase();
+    }
+    
     if (hashtagCount >= 3 && hashtagCount <= 8) hashtagScore += 10;
-    if (generatedContent.hashtags.toLowerCase().includes('#viral')) hashtagScore += 10;
+    if (hashtagString.includes('#viral')) hashtagScore += 10;
 
     // Thumbnail scoring (max 15 points)
     const thumbnailIdea = generatedContent.thumbnailDesignIdea.toLowerCase();

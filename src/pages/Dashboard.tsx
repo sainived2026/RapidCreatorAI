@@ -598,7 +598,11 @@ const Dashboard = () => {
                     
                     <div>
                       <h3 className="font-semibold mb-2 text-sm sm:text-base">🏷️ Hashtags:</h3>
-                      <p className="text-foreground text-sm sm:text-base leading-relaxed break-all">{generatedContent.hashtags}</p>
+                      <p className="text-foreground text-sm sm:text-base leading-relaxed break-all">
+                        {Array.isArray(generatedContent.hashtags) 
+                          ? generatedContent.hashtags.join(' ') 
+                          : generatedContent.hashtags}
+                      </p>
                     </div>
                     
                     <Separator />
