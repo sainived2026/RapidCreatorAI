@@ -135,9 +135,9 @@ serve(async (req) => {
 
     const getScriptLength = (videoLength: string) => {
       const lengthGuides = {
-        '15-30 seconds': 'Keep script concise with 30-50 words. Focus on one key message with strong hook and quick payoff.',
-        '30-45 seconds': 'Write 50-80 words. Allow for brief setup, main content, and clear call-to-action.',
-        'Under 60 seconds': 'Use 80-120 words. Include hook, main content with 2-3 key points, and strong conclusion.'
+        '15-30 seconds': 'Keep script concise with 50-70 words. Focus on one key message with strong hook and quick payoff.',
+        '30-45 seconds': 'Write 70-100 words. Allow for brief setup, main content, and clear call-to-action.',
+        'Under 60 seconds': 'Use 100-140 words. Include hook, main content with 2-3 key points, and strong conclusion.'
       };
       return lengthGuides[videoLength] || 'Keep script appropriate for video length.';
     };
