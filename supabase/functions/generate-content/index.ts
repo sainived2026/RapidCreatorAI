@@ -275,7 +275,7 @@ Required JSON format:
               model: "runware:100@1",
               steps: 4,
               CFGScale: 1,
-              numberResults: 2,
+              numberResults: 1,
               outputFormat: "WEBP"
             }
           ]),
