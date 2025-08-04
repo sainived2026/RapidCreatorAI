@@ -98,46 +98,46 @@ serve(async (req) => {
     // Create dynamic prompts based on style and format
     const getStylePrompt = (style: string) => {
       const stylePrompts = {
-        'Hook-based': 'Start with a powerful hook that grabs attention in the first 3 seconds. Use curiosity gaps and compelling questions.',
-        'Storytelling': 'Create a narrative structure with beginning, middle, and end. Include emotional elements and relatable characters.',
-        'Educational': 'Focus on teaching valuable information. Break down complex topics into digestible steps.',
-        'Entertainment': 'Prioritize fun, humor, and engagement. Keep the tone light and entertaining.',
-        'Behind-the-scenes': 'Show the process, reveal secrets, and give insider access to how things work.',
-        'Tutorial/How-to': 'Provide step-by-step instructions that viewers can follow along with.',
-        'Q&A': 'Address common questions and provide clear, helpful answers.',
-        'List-based': 'Structure content as a numbered or bulleted list of tips, facts, or items.',
-        'Trending/News': 'Connect to current events, trending topics, or viral moments.',
-        'Inspirational': 'Motivate and uplift viewers with positive messages and success stories.',
-        'Comparison': 'Compare different options, products, or approaches to help viewers decide.',
-        'Review': 'Provide honest opinions and evaluations of products, services, or experiences.',
-        'Challenge': 'Present challenges, experiments, or tests that create engagement.',
-        'Reaction': 'React to trending content, news, or viral videos with authentic responses.',
-        'Stats/Facts': 'Present interesting statistics, data, and surprising facts.'
+     'Hook-based': 'Grab attention in the first 3 seconds with bold hooks, curiosity gaps, or questions.',
+     'Storytelling': 'Craft a clear beginning, middle, and end. Use emotion, tension, and relatable characters.',
+     'Educational': 'Teach something valuable. Break down complex topics into simple, step-by-step lessons.',
+     'Entertainment': 'Engage with humor, surprise, or fun edits. Keep it light, fast-paced, and enjoyable.',
+     'Behind-the-scenes': 'Reveal the \'how\' behind the final result. Show raw, real, and relatable processes.',
+     'Tutorial / How-to': 'Provide practical, step-by-step guidance viewers can follow and apply instantly.',
+     'Q&A': 'Answer common or trending questions in a clear, helpful, and engaging format.',
+     'List-based': 'Deliver fast, snappy tips or facts using numbered or bulleted lists to keep attention.',
+     'Trending / News': 'Tap into trending topics or current events to stay relevant and ride the algorithm.',
+     'Inspirational': 'Share motivational insights or success stories that spark emotion and positivity.',
+     'Comparison': 'Compare products, methods, or ideas side-by-side to help viewers choose smarter.',
+     'Review': 'Give honest, personal reviews of tools, services, or experiences with pros and cons.',
+     'Challenge': 'Test limits or do viral challenges that spark curiosity and boost engagement.',
+     'Reaction': 'React to viral videos, news, or memes with authentic, entertaining commentary.',
+     'Stats / Facts': 'Share surprising data or mind-blowing facts in a concise, punchy way.'
       };
       return stylePrompts[style] || 'Create engaging content that captures attention.';
     };
 
     const getFormatPrompt = (format: string) => {
       const formatPrompts = {
-        'YouTube Short': 'Optimize for YouTube Shorts with vertical format, quick pacing, and strong visual elements.',
-        'Instagram Reel': 'Create Instagram-friendly content with trending audio opportunities and hashtag optimization.',
-        'TikTok': 'Follow TikTok trends, use popular sounds, and create content that encourages interaction.',
-        'Facebook Reel': 'Design for Facebook\'s audience with clear messaging and community engagement focus.',
-        'Snapchat Spotlight': 'Create authentic, raw content that feels native to Snapchat\'s platform.',
-        'Pinterest Idea Pin': 'Focus on inspiration, tutorials, and visually appealing step-by-step content.',
-        'LinkedIn Video': 'Professional tone with business value, industry insights, and career-focused content.',
-        'Twitter/X Video': 'Concise, punchy content that sparks conversation and encourages retweets.',
-        'Carousel Post': 'Structure content across multiple slides with clear progression and visual consistency.',
-        'Story Format': 'Create ephemeral content with interactive elements and behind-the-scenes feel.'
+        'YouTube Short': 'Vertical, fast-paced videos with strong hooks, edits, and visual storytelling.',
+        'Instagram Reel': 'Use trending audio, clean visuals, and hashtags for shareable, scroll-stopping content.',
+        'TikTok': 'Leverage trends, viral sounds, and relatable formats that invite duets and comments.',
+        'Facebook Reel': 'Keep messaging clear and friendly with a focus on shareability and reactions.',
+        'Snapchat Spotlight': 'Raw, native-style clips that feel personal, spontaneous, and unpolished.',
+        'Pinterest Idea Pin': 'Inspire with how-tos, DIYs, and beautiful, step-by-step visual content.',
+        'LinkedIn Video': 'Keep it professional with insights, tips, and value-driven business storytelling.',
+        'Twitter/X Video': 'Short, bold content that sparks discussion and stands out in the feed.',
+        'Carousel Post': 'Deliver multi-part value across slides with visual harmony and clear flow.',
+        'Story Format': 'Create behind-the-scenes, time-sensitive content with polls, Q&As, or swipe-ups.'
       };
       return formatPrompts[format] || 'Create platform-optimized content.';
     };
 
     const getScriptLength = (videoLength: string) => {
       const lengthGuides = {
-        '15-30 seconds': 'Keep script concise with 70-90 words. Focus on one key message with strong hook and quick payoff.',
-        '30-45 seconds': 'Write 90-120 words. Allow for brief setup, main content, and clear call-to-action.',
-        'Under 60 seconds': 'Use 120-160 words. Include hook, main content with 2-3 key points, and strong conclusion.'
+        '15-30 seconds': 'Keep script concise with 50-70 words. Focus on one key message with strong hook and quick payoff.',
+        '30-45 seconds': 'Write 70-100 words. Allow for brief setup, main content, and clear call-to-action.',
+        'Under 60 seconds': 'Use 100-140 words. Include hook, main content with 2-3 key points, and strong conclusion.'
       };
       return lengthGuides[videoLength] || 'Keep script appropriate for video length.';
     };
