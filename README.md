@@ -1,73 +1,114 @@
-# Welcome to your Lovable project
+# 🚀 RapidCreatorAI
 
-## Project info
+**RapidCreatorAI** is a high-performance, AI-driven platform designed to streamline the creative process. Built with speed and scalability in mind, it leverages a modern technical stack to help users generate high-quality content and assets at lightning speed.
 
-**URL**: https://lovable.dev/projects/ab91d229-7d03-469e-b52b-15d958262caf
+[](https://lovable.dev/projects/ab91d229-7d03-469e-b52b-15d958262caf)
+[](https://www.google.com/search?q=%23)
 
-## How can I edit this code?
+-----
 
-There are several ways of editing your application.
+## ✨ Key Features
 
-**Use Lovable**
+  - **⚡ Ultra-Fast Generation:** Powered by Vite for near-instant development and production performance.
+  - **🤖 Intelligent Workflows:** Integrated AI logic to automate repetitive creative tasks.
+  - **🔐 Secure Backend:** Robust user authentication and data management via Supabase.
+  - **🎨 Modern UI/UX:** A sleek, responsive interface built with Tailwind CSS and shadcn/ui.
+  - **🛠 Custom RAG Integration:** (Optional: include if you have added your custom RAG workflows here) Optimized for context-aware content generation.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ab91d229-7d03-469e-b52b-15d958262caf) and start prompting.
+-----
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🛠 Tech Stack
 
-**Use your preferred IDE**
+| Technology | Purpose |
+| :--- | :--- |
+| **React** | Component-based UI library |
+| **TypeScript** | Type-safe development |
+| **Vite** | Next-generation frontend tooling |
+| **Supabase** | Backend-as-a-Service (Auth, Database, Storage) |
+| **Tailwind CSS** | Utility-first styling |
+| **shadcn/ui** | Accessible and beautiful UI components |
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+-----
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🚀 Getting Started
 
-Follow these steps:
+### Prerequisites
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+  - [Node.js](https://www.google.com/search?q=https://nodejs.org/) (v18 or higher)
+  - [Bun](https://www.google.com/search?q=https://bun.sh/) or npm
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Installation
 
-# Step 3: Install the necessary dependencies.
-npm i
+1.  **Clone the repository:**
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+    ```bash
+    git clone https://github.com/sainived2026/RapidCreatorAI.git
+    cd RapidCreatorAI
+    ```
+
+2.  **Install dependencies:**
+
+    ```bash
+    npm install
+    # OR if you prefer Bun
+    bun install
+    ```
+
+3.  **Set up Environment Variables:**
+    Create a `.env` file in the root directory and add your Supabase credentials:
+
+    ```env
+    VITE_SUPABASE_URL=your_supabase_url
+    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+    ```
+
+4.  **Run the development server:**
+
+    ```bash
+    npm run dev
+    ```
+
+-----
+
+## 📁 Project Structure
+
+```text
+RapidCreatorAI/
+├── public/          # Static assets
+├── src/
+│   ├── components/  # Reusable UI components (shadcn)
+│   ├── hooks/       # Custom React hooks
+│   ├── lib/         # Utility functions and Supabase client
+│   ├── pages/       # Main application views
+│   └── types/       # TypeScript interfaces
+├── supabase/        # Database migrations and configuration
+├── tailwind.config.ts
+└── vite.config.ts
 ```
 
-**Edit a file directly in GitHub**
+-----
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🤝 Contributing
 
-**Use GitHub Codespaces**
+Contributions are welcome\! If you have a suggestion that would make this better, please fork the repo and create a pull request.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
 
-## What technologies are used for this project?
+-----
 
-This project is built with:
+## 📄 License
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+This project is licensed under the MIT License - see the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.
 
-## How can I deploy this project?
+-----
 
-Simply open [Lovable](https://lovable.dev/projects/ab91d229-7d03-469e-b52b-15d958262caf) and click on Share -> Publish.
+## 📬 Contact
 
-## Can I connect a custom domain to my Lovable project?
+**Ved Saini** - Founder of NexRyzen  
+Project Link: [https://github.com/sainived2026/RapidCreatorAI](https://www.google.com/search?q=https://github.com/sainived2026/RapidCreatorAI)
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+*Built with ❤️ to accelerate the future of AI creation.*
